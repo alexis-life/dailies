@@ -210,24 +210,21 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
         ))}
       </div>
 
-      <div className="starter-row">
-        <span className="label-micro">quick fill</span>
-        <div className="starter-buttons">
-          {STARTERS.map((pattern, i) => (
-            <button
-              key={i}
-              type="button"
-              className="ax-chip starter-btn"
-              onClick={() => addStarterRow(pattern)}
-              disabled={guesses.length >= MAX_ROWS}
-              title={pattern.join(', ')}
-            >
-              {pattern.map((key, j) => (
-                <span key={j} className="peg-dot starter-dot" style={{ background: pegHex(key) }} />
-              ))}
-            </button>
-          ))}
-        </div>
+      <div className="starter-buttons">
+        {STARTERS.map((pattern, i) => (
+          <button
+            key={i}
+            type="button"
+            className="ax-chip starter-btn"
+            onClick={() => addStarterRow(pattern)}
+            disabled={guesses.length >= MAX_ROWS}
+            title={pattern.join(', ')}
+          >
+            {pattern.map((key, j) => (
+              <span key={j} className="peg-dot starter-dot" style={{ background: pegHex(key) }} />
+            ))}
+          </button>
+        ))}
       </div>
 
       <div className="guess-row-actions">

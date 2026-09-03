@@ -350,17 +350,11 @@
   gap: 24px;
 }
 
-.starter-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
 .starter-buttons {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
 .starter-btn {
