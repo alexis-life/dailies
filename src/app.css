@@ -371,6 +371,7 @@
   font-weight: 700;
   color: var(--c8);
   flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .badge-count {

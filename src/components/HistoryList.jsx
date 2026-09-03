@@ -71,7 +71,7 @@ export default function HistoryList({ games, guessesByGame, isSignedIn, onChange
             <div className="history-item" key={game.id}>
               <button type="button" className="history-item-row" onClick={() => toggleExpand(game.id)}>
                 <div className="history-item-row-top">
-                  <span className="history-item-puzzle">#{game.puzzle_number}</span>
+                  <span className="history-item-puzzle">#{String(game.puzzle_number).padStart(3, '0')}</span>
                   <span className={`ax-badge ${game.won ? 'badge-won' : 'badge-lost'}`}>
                     {game.won ? 'won' : 'lost'}
                   </span>
