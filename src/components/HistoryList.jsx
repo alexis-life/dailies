@@ -1,0 +1,124 @@
+import { useState } from 'react'
+import { supabase } from '../lib/supabaseClient'
+import BoardReplay from './BoardReplay'
+
+export default function HistoryList({ games, guessesByGame, isSignedIn, onChanged }) {
+  const [expandedId, setExpandedId] = useState(null)
+  const [editingId, setEditingId] = useState(null)
+  const [noteDraft, setNoteDraft] = useState('')
+  const [busyId, setBusyId] = useState(null)
+  const [error, setError] = useState(null)
+
+  const sorted = [...games].sort((a, b) => b.puzzle_number - a.puzzle_number)
+
+  function toggleExpand(id) {
+    setExpandedId((cur) => (cur === id ? null : id))
+  }
+
+  function startEdit(game) {
+    setEditingId(game.id)
+    setNoteDraft(game.note ?? '')
+  }
+
+  async function saveNote(id) {
+    setBusyId(id)
+    setError(null)
+    const { error: updateError } = await supabase
+      .from('spots_games')
+      .update({ note: noteDraft.trim() || null })
+      .eq('id', id)
+    setBusyId(null)
+    if (updateError) {
+      setError(updateError.message)
+      return
+    }
+    setEditingId(null)
+    onChanged?.()
+  }
+
+  async function deleteGame(id) {
+    if (!window.confirm('Delete this game and its guesses?')) return
+    setBusyId(id)
+    setError(null)
+    const { error: deleteError } = await supabase.from('spots_games').delete().eq('id', id)
+    setBusyId(null)
+    if (deleteError) {
+      setError(deleteError.message)
+      return
+    }
+    onChanged?.()
+  }
+
+  if (sorted.length === 0) {
+    return (
+      <div className="ax-card">
+        <h2>history</h2>
+        <p className="ax-empty">no games logged yet.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="ax-card">
+      <h2>history</h2>
+      {error && <p className="ax-meta form-error">{error}</p>}
+      <div className="history-list">
+        {sorted.map((game) => {
+          const expanded = expandedId === game.id
+          const editing = editingId === game.id
+          const busy = busyId === game.id
+          return (
+            <div className="history-item" key={game.id}>
+              <button type="button" className="history-item-row" onClick={() => toggleExpand(game.id)}>
+                <span className="history-item-puzzle">#{game.puzzle_number}</span>
+                <span className={`ax-badge ${game.won ? 'badge-won' : 'badge-lost'}`}>
+                  {game.won ? 'won' : 'lost'}
+                </span>
+                <span className="text-meta history-item-note">{game.note}</span>
+                <span className="history-item-chevron">{expanded ? '▲' : '▼'}</span>
+              </button>
+
+              {expanded && (
+                <div className="history-item-detail">
+                  <BoardReplay guesses={guessesByGame[game.id] ?? []} />
+
+                  {isSignedIn && (
+                    <div className="history-item-actions">
+                      {editing ? (
+                        <>
+                          <textarea
+                            className="ax-input"
+                            rows={2}
+                            value={noteDraft}
+                            onChange={(e) => setNoteDraft(e.target.value)}
+                          />
+                          <div className="history-item-actions-row">
+                            <button className="ax-btn ax-btn--solid" disabled={busy} onClick={() => saveNote(game.id)}>
+                              save note
+                            </button>
+                            <button className="ax-btn" disabled={busy} onClick={() => setEditingId(null)}>
+                              cancel
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="history-item-actions-row">
+                          <button className="ax-btn" disabled={busy} onClick={() => startEdit(game)}>
+                            edit note
+                          </button>
+                          <button className="ax-btn" disabled={busy} onClick={() => deleteGame(game.id)}>
+                            {busy ? 'deleting…' : 'delete'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}

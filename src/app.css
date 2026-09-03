@@ -1,0 +1,381 @@
+.page-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px var(--content-pad) 48px;
+}
+
+/* ── Header ────────────────────────────────────────── */
+.spots-header-titles {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.spots-account-actions {
+  flex-shrink: 0;
+}
+
+.spots-account-link {
+  font-size: 0.65rem;
+}
+
+/* ── Lowercase everywhere: this app's own copy is already
+   written in lowercase — strip the theme's shouty-caps
+   transform on buttons/labels so it renders as typed. ── */
+.ax-btn,
+.label-micro,
+.ax-stat-label {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* ── Page layout ───────────────────────────────────── */
+.page-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 20px;
+  align-items: start;
+}
+
+.page-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+@media (max-width: 860px) {
+  .page-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Form basics ───────────────────────────────────── */
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-error {
+  color: var(--error);
+  margin-bottom: 12px;
+}
+
+.result-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Modal (sign-in) ───────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(82, 46, 56, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.modal-panel {
+  width: 100%;
+}
+
+/* ── Stats panel ───────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* ── Distribution / colors-used bars ──────────────────── */
+.dist-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.dist-row {
+  display: grid;
+  grid-template-columns: 16px 1fr 24px;
+  align-items: center;
+  gap: 10px;
+}
+
+.dist-bar-track {
+  background: var(--bg-hover);
+  border-radius: var(--radius-pill);
+  height: 14px;
+  overflow: hidden;
+}
+
+.dist-bar-fill {
+  height: 100%;
+  background: var(--c6);
+  border-radius: var(--radius-pill);
+  transition: width 0.2s ease;
+}
+
+.dist-row-count {
+  text-align: right;
+}
+
+.colors-used-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.colors-used-row {
+  display: grid;
+  grid-template-columns: 16px 60px 1fr 24px;
+  align-items: center;
+  gap: 10px;
+}
+
+.colors-used-count {
+  text-align: right;
+}
+
+/* ── Pegs & color swatches ─────────────────────────── */
+.peg-dot {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 0;
+  cursor: default;
+}
+
+.peg-dot--slot {
+  cursor: pointer;
+  border-width: 2px;
+  border-color: var(--c2);
+}
+
+.peg-dot--swatch {
+  cursor: pointer;
+  width: 26px;
+  height: 26px;
+}
+
+.peg-dot--sm {
+  width: 16px;
+  height: 16px;
+}
+
+.color-slot-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.color-swatch-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 10px;
+  box-shadow: var(--shadow-popover);
+}
+
+/* ── Guess row builder ─────────────────────────────── */
+.guess-row-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.guess-row-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg-hover);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+}
+
+.guess-row-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.guess-row-index {
+  flex-shrink: 0;
+  min-width: 20px;
+  font-weight: 600;
+  color: var(--c7);
+}
+
+.guess-row-colors {
+  display: flex;
+  gap: 6px;
+}
+
+.guess-row-remove {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.guess-row-pegs {
+  display: flex;
+  gap: 24px;
+}
+
+.guess-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* ── Peg stepper ────────────────────────────────────── */
+.peg-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+}
+
+.peg-stepper-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.peg-stepper-btn {
+  padding: 2px 9px;
+  font-size: 0.85rem;
+}
+
+.peg-stepper-value {
+  min-width: 16px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--c8);
+}
+
+/* ── History list ───────────────────────────────────── */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.history-item {
+  border: 1px solid var(--c1);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.history-item-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-surface);
+  border: none;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  text-align: left;
+}
+
+.history-item-row:hover { background: var(--bg-hover); }
+
+.history-item-puzzle {
+  font-weight: 700;
+  color: var(--c8);
+  flex-shrink: 0;
+}
+
+.history-item-note {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-item-chevron {
+  flex-shrink: 0;
+  color: var(--c5);
+  font-size: 0.7rem;
+}
+
+.badge-won { background: var(--success-bg); color: var(--success); }
+.badge-lost { background: var(--error-bg); color: var(--error); }
+
+.history-item-detail {
+  padding: 14px;
+  border-top: 1px solid var(--c1);
+}
+
+.history-item-actions {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-item-actions-row {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Board replay ───────────────────────────────────── */
+.board-replay {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.board-replay-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-hover);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+}
+
+.board-replay-colors {
+  display: flex;
+  gap: 6px;
+}
+
+.board-replay-feedback {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3px;
+}
+
+.feedback-peg {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.feedback-peg--green { background: #2e7d32; }
+.feedback-peg--gold { background: #f2b705; }
+.feedback-peg--gray { background: #9e9e9e; }
