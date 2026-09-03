@@ -395,9 +395,13 @@
   white-space: nowrap;
 }
 
+.history-item-date {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
 .history-item-chevron {
   flex-shrink: 0;
-  margin-left: auto;
   color: var(--c5);
   transition: transform 0.15s ease;
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { puzzleDateFor } from '../lib/puzzleDate'
 import BoardReplay from './BoardReplay'
 
 export default function HistoryList({ games, guessesByGame, isSignedIn, onChanged }) {
@@ -79,6 +80,7 @@ export default function HistoryList({ games, guessesByGame, isSignedIn, onChange
                     {game.guess_count} {game.guess_count === 1 ? 'guess' : 'guesses'}
                   </span>
                   {game.is_daily === false && <span className="ax-badge badge-archive">archive</span>}
+                  <span className="text-meta history-item-date">{puzzleDateFor(game.puzzle_number)}</span>
                   <svg
                     className={`history-item-chevron ${expanded ? 'is-expanded' : ''}`}
                     width="14"
