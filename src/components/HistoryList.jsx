@@ -78,6 +78,7 @@ export default function HistoryList({ games, guessesByGame, isSignedIn, onChange
                   <span className="ax-badge badge-count">
                     {game.guess_count} {game.guess_count === 1 ? 'guess' : 'guesses'}
                   </span>
+                  {game.is_daily === false && <span className="ax-badge badge-archive">archive</span>}
                   <svg
                     className={`history-item-chevron ${expanded ? 'is-expanded' : ''}`}
                     width="14"

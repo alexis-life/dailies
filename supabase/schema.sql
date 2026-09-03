@@ -8,6 +8,7 @@ create table if not exists spots_games (
   won boolean not null default false,
   guess_count integer not null,
   note text,
+  is_daily boolean not null default true,
   created_at timestamptz not null default now()
 );
 

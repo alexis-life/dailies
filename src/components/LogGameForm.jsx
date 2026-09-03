@@ -10,6 +10,7 @@ function emptyGuess() {
 
 export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
   const [puzzleNumber, setPuzzleNumber] = useState('')
+  const [isDaily, setIsDaily] = useState(true)
   const [note, setNote] = useState('')
   const [guesses, setGuesses] = useState([emptyGuess()])
   const [saving, setSaving] = useState(false)
@@ -37,6 +38,7 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
 
   function resetForm() {
     setPuzzleNumber('')
+    setIsDaily(true)
     setNote('')
     setGuesses([emptyGuess()])
   }
@@ -73,6 +75,7 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
         won,
         guess_count: guesses.length,
         note: note.trim() || null,
+        is_daily: isDaily,
       })
       .select()
       .single()
@@ -109,15 +112,36 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
     <form className="ax-card log-game-form" onSubmit={handleSubmit}>
       <h2>log a game</h2>
 
-      <div className="form-row">
-        <label className="label-micro">puzzle number</label>
-        <input
-          className="ax-input"
-          type="number"
-          value={puzzleNumber}
-          onChange={(e) => setPuzzleNumber(e.target.value)}
-          required
-        />
+      <div className="form-grid-2">
+        <div className="form-row">
+          <label className="label-micro">puzzle number</label>
+          <input
+            className="ax-input"
+            type="number"
+            value={puzzleNumber}
+            onChange={(e) => setPuzzleNumber(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-row">
+          <label className="label-micro">puzzle type</label>
+          <div className="puzzle-type-toggle">
+            <button
+              type="button"
+              className={`ax-btn ${isDaily ? 'ax-btn--solid' : ''}`}
+              onClick={() => setIsDaily(true)}
+            >
+              daily
+            </button>
+            <button
+              type="button"
+              className={`ax-btn ${!isDaily ? 'ax-btn--solid' : ''}`}
+              onClick={() => setIsDaily(false)}
+            >
+              archive
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="form-row">

@@ -81,6 +81,11 @@
   margin-top: 6px;
 }
 
+.puzzle-type-toggle {
+  display: flex;
+  gap: 8px;
+}
+
 /* ── Modal (sign-in) ───────────────────────────────── */
 .modal-overlay {
   position: fixed;
@@ -156,9 +161,14 @@
 
 .dist-row {
   display: grid;
-  grid-template-columns: 16px 1fr 24px;
+  grid-template-columns: 18px 1fr 24px;
   align-items: center;
   gap: 10px;
+}
+
+.dist-row-label {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .dist-bar-track {
@@ -366,6 +376,14 @@
 .badge-count {
   background: var(--bg-hover);
   color: var(--c7);
+  flex-shrink: 0;
+  width: 92px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.badge-archive {
   flex-shrink: 0;
 }
 

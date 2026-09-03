@@ -57,8 +57,9 @@ export default function App() {
     return acc
   }, {})
 
-  const nextPuzzleNumber = games.length
-    ? Math.max(...games.map((g) => g.puzzle_number)) + 1
+  const dailyGames = games.filter((g) => g.is_daily !== false)
+  const nextPuzzleNumber = dailyGames.length
+    ? Math.max(...dailyGames.map((g) => g.puzzle_number)) + 1
     : ''
 
   const stats = computeStats(games)
