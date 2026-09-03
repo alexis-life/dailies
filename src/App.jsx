@@ -73,7 +73,7 @@ export default function App() {
         <div className="ax-header-titles spots-header-titles">
           <div>
             <h1 className="ax-title">spots tracker</h1>
-            <p className="ax-subtitle">personal results tracker for spots</p>
+            <p className="ax-subtitle">personal results tracker for spots.wtf</p>
           </div>
           <div className="spots-account-actions">
             <button className="ax-btn spots-account-link" onClick={() => setShowHelp(true)}>how to play</button>

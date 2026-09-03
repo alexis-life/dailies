@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { computeFeedback } from '../lib/feedback'
 import GuessRowEditor from './GuessRowEditor'
 
 const MAX_ROWS = 10
@@ -11,12 +12,25 @@ function emptyGuess() {
 export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
   const [puzzleNumber, setPuzzleNumber] = useState('')
   const [isDaily, setIsDaily] = useState(true)
+  const [autoSolve, setAutoSolve] = useState(true)
   const [note, setNote] = useState('')
   const [guesses, setGuesses] = useState([emptyGuess()])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
 
-  const won = guesses[guesses.length - 1].green === 4
+  const lastGuess = guesses[guesses.length - 1]
+  // The "solution" is the last fully-colored row, ignoring any trailing
+  // blank rows — so adding a new guess row doesn't retroactively hide
+  // feedback that was already calculated for earlier, completed rows.
+  const filledGuesses = guesses.filter((g) => g.colors.every((c) => c))
+  const solutionGuess = filledGuesses[filledGuesses.length - 1]
+  const solution = solutionGuess?.colors ?? null
+  const solutionReady = autoSolve && Boolean(solution)
+  const won = autoSolve ? solutionReady : lastGuess.green === 4
+
+  const feedbackByRow = solutionReady
+    ? guesses.map((g) => (g.colors.every((c) => c) ? computeFeedback(g.colors, solution) : null))
+    : guesses.map(() => null)
 
   // Prefill the next puzzle number, but never clobber something the user
   // already typed — only fills in while the field is still blank.
@@ -39,6 +53,7 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
   function resetForm() {
     setPuzzleNumber('')
     setIsDaily(true)
+    setAutoSolve(true)
     setNote('')
     setGuesses([emptyGuess()])
   }
@@ -51,6 +66,9 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
       if (g.colors.some((c) => !c)) {
         return 'Every guess row needs all 4 colors filled in.'
       }
+    }
+    if (autoSolve && !solutionReady) {
+      return 'Fill in all 4 colors on your final (winning) guess so feedback can be calculated.'
     }
     if (!won && guesses.length < MAX_ROWS) {
       return `Not a win yet — add more guesses (up to ${MAX_ROWS}) or get 4 greens on the last row.`
@@ -86,13 +104,16 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
       return
     }
 
-    const guessRows = guesses.map((g, i) => ({
-      game_id: game.id,
-      row_index: i,
-      colors: g.colors,
-      green_pegs: g.green,
-      gold_pegs: g.gold,
-    }))
+    const guessRows = guesses.map((g, i) => {
+      const feedback = feedbackByRow[i]
+      return {
+        game_id: game.id,
+        row_index: i,
+        colors: g.colors,
+        green_pegs: feedback ? feedback.green : g.green,
+        gold_pegs: feedback ? feedback.yellow : g.gold,
+      }
+    })
 
     const { error: guessesError } = await supabase.from('spots_guesses').insert(guessRows)
 
@@ -151,10 +172,24 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
         </span>
       </div>
 
+      <label className="auto-solve-toggle">
+        <input
+          type="checkbox"
+          checked={autoSolve}
+          onChange={(e) => setAutoSolve(e.target.checked)}
+        />
+        <span className="toggle-switch-track">
+          <span className="toggle-switch-thumb" />
+        </span>
+        <span className="text-meta">auto-calculate feedback</span>
+      </label>
+
       <div className="guess-row-list">
         {guesses.map((g, i) => (
           <GuessRowEditor
             key={i}
+            feedback={feedbackByRow[i]}
+            autoSolve={autoSolve}
             index={i}
             guess={g}
             onChange={(next) => updateGuess(i, next)}
