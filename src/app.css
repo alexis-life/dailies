@@ -350,6 +350,24 @@
   gap: 24px;
 }
 
+.starter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.starter-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.starter-btn {
+  display: inline-flex;
+  gap: 4px;
+}
+
 .guess-row-actions {
   display: flex;
   align-items: center;

@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { computeFeedback } from '../lib/feedback'
+import { pegHex } from '../lib/colors'
 import GuessRowEditor from './GuessRowEditor'
 
 const MAX_ROWS = 10
+
+const STARTERS = [
+  ['red', 'white', 'red', 'white'],
+  ['blue', 'green', 'blue', 'green'],
+  ['gold', 'purple', 'gold', 'purple'], // "gold" is the internal key for the color labeled "yellow"
+]
 
 function emptyGuess() {
   return { colors: [null, null, null, null], green: 0, gold: 0 }
@@ -44,6 +51,10 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
 
   function addRow() {
     setGuesses((rows) => (rows.length >= MAX_ROWS ? rows : [...rows, emptyGuess()]))
+  }
+
+  function addStarterRow(colors) {
+    setGuesses((rows) => (rows.length >= MAX_ROWS ? rows : [...rows, { colors: [...colors], green: 0, gold: 0 }]))
   }
 
   function removeRow(i) {
@@ -197,6 +208,26 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
             canRemove={guesses.length > 1}
           />
         ))}
+      </div>
+
+      <div className="starter-row">
+        <span className="label-micro">quick fill</span>
+        <div className="starter-buttons">
+          {STARTERS.map((pattern, i) => (
+            <button
+              key={i}
+              type="button"
+              className="ax-btn starter-btn"
+              onClick={() => addStarterRow(pattern)}
+              disabled={guesses.length >= MAX_ROWS}
+              title={pattern.join(', ')}
+            >
+              {pattern.map((key, j) => (
+                <span key={j} className="peg-dot peg-dot--sm" style={{ background: pegHex(key) }} />
+              ))}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="guess-row-actions">
