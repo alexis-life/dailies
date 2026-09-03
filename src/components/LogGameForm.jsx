@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import GuessRowEditor from './GuessRowEditor'
 
@@ -8,7 +8,7 @@ function emptyGuess() {
   return { colors: [null, null, null, null], green: 0, gold: 0 }
 }
 
-export default function LogGameForm({ onSaved }) {
+export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
   const [puzzleNumber, setPuzzleNumber] = useState('')
   const [note, setNote] = useState('')
   const [guesses, setGuesses] = useState([emptyGuess()])
@@ -16,6 +16,12 @@ export default function LogGameForm({ onSaved }) {
   const [error, setError] = useState(null)
 
   const won = guesses[guesses.length - 1].green === 4
+
+  // Prefill the next puzzle number, but never clobber something the user
+  // already typed — only fills in while the field is still blank.
+  useEffect(() => {
+    setPuzzleNumber((current) => (current === '' ? String(nextPuzzleNumber ?? '') : current))
+  }, [nextPuzzleNumber])
 
   function updateGuess(i, next) {
     setGuesses((rows) => rows.map((r, idx) => (idx === i ? next : r)))

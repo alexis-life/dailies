@@ -57,6 +57,10 @@ export default function App() {
     return acc
   }, {})
 
+  const nextPuzzleNumber = games.length
+    ? Math.max(...games.map((g) => g.puzzle_number)) + 1
+    : ''
+
   const stats = computeStats(games)
   const distribution = computeGuessDistribution(games)
   const colorCounts = computeColorsUsed(guesses)
@@ -100,7 +104,7 @@ export default function App() {
             </div>
             <div className="page-col page-col--side">
               {isSignedIn ? (
-                <LogGameForm onSaved={loadData} />
+                <LogGameForm nextPuzzleNumber={nextPuzzleNumber} onSaved={loadData} />
               ) : (
                 <div className="ax-card">
                   <h2>log a game</h2>

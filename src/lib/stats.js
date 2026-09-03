@@ -1,25 +1,22 @@
 // Games are expected sorted by puzzle_number ascending for streak math.
+// A streak requires both a win AND an unbroken run of puzzle numbers —
+// an unlogged/skipped puzzle breaks it just like a loss would, matching
+// how daily-puzzle games (Wordle, SPOTS) define a streak.
 export function computeStats(games) {
   const played = games.length
   const won = games.filter((g) => g.won).length
   const winPct = played ? Math.round((won / played) * 100) : 0
 
-  let currentStreak = 0
-  let bestStreak = 0
   let running = 0
+  let bestStreak = 0
+  let prevPuzzle = null
   for (const g of games) {
-    if (g.won) {
-      running += 1
-      bestStreak = Math.max(bestStreak, running)
-    } else {
-      running = 0
-    }
+    const isConsecutive = prevPuzzle !== null && g.puzzle_number === prevPuzzle + 1
+    running = g.won && (running === 0 || isConsecutive) ? running + 1 : g.won ? 1 : 0
+    bestStreak = Math.max(bestStreak, running)
+    prevPuzzle = g.puzzle_number
   }
-  // current streak counts back from the most recent game.
-  for (let i = games.length - 1; i >= 0; i--) {
-    if (games[i].won) currentStreak += 1
-    else break
-  }
+  const currentStreak = running
 
   return { played, won, winPct, currentStreak, bestStreak }
 }

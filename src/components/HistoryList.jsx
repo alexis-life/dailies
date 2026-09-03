@@ -70,23 +70,25 @@ export default function HistoryList({ games, guessesByGame, isSignedIn, onChange
           return (
             <div className="history-item" key={game.id}>
               <button type="button" className="history-item-row" onClick={() => toggleExpand(game.id)}>
-                <span className="history-item-puzzle">#{game.puzzle_number}</span>
-                <span className={`ax-badge ${game.won ? 'badge-won' : 'badge-lost'}`}>
-                  {game.won ? 'won' : 'lost'}
-                </span>
-                <span className="ax-badge badge-count">
-                  {game.guess_count} {game.guess_count === 1 ? 'guess' : 'guesses'}
-                </span>
-                <span className="text-meta history-item-note">{game.note}</span>
-                <svg
-                  className={`history-item-chevron ${expanded ? 'is-expanded' : ''}`}
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
-                  fill="none"
-                >
-                  <path d="M3 5.5L7 9.5L11 5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <div className="history-item-row-top">
+                  <span className="history-item-puzzle">#{game.puzzle_number}</span>
+                  <span className={`ax-badge ${game.won ? 'badge-won' : 'badge-lost'}`}>
+                    {game.won ? 'won' : 'lost'}
+                  </span>
+                  <span className="ax-badge badge-count">
+                    {game.guess_count} {game.guess_count === 1 ? 'guess' : 'guesses'}
+                  </span>
+                  <svg
+                    className={`history-item-chevron ${expanded ? 'is-expanded' : ''}`}
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                  >
+                    <path d="M3 5.5L7 9.5L11 5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+                {game.note && <p className="text-meta history-item-note">{game.note}</p>}
               </button>
 
               {expanded && (
