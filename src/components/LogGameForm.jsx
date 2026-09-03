@@ -10,11 +10,12 @@ function emptyGuess() {
 
 export default function LogGameForm({ onSaved }) {
   const [puzzleNumber, setPuzzleNumber] = useState('')
-  const [won, setWon] = useState(true)
   const [note, setNote] = useState('')
   const [guesses, setGuesses] = useState([emptyGuess()])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
+
+  const won = guesses[guesses.length - 1].green === 4
 
   function updateGuess(i, next) {
     setGuesses((rows) => rows.map((r, idx) => (idx === i ? next : r)))
@@ -30,7 +31,6 @@ export default function LogGameForm({ onSaved }) {
 
   function resetForm() {
     setPuzzleNumber('')
-    setWon(true)
     setNote('')
     setGuesses([emptyGuess()])
   }
@@ -39,16 +39,13 @@ export default function LogGameForm({ onSaved }) {
     if (!puzzleNumber || Number.isNaN(Number(puzzleNumber))) {
       return 'Enter a puzzle number.'
     }
-    if (guesses.length === 0) {
-      return 'Add at least one guess row.'
-    }
     for (const g of guesses) {
       if (g.colors.some((c) => !c)) {
         return 'Every guess row needs all 4 colors filled in.'
       }
     }
-    if (won && guesses[guesses.length - 1].green !== 4) {
-      return 'A won game must end on a guess with 4 green pegs.'
+    if (!won && guesses.length < MAX_ROWS) {
+      return `Not a win yet — add more guesses (up to ${MAX_ROWS}) or get 4 greens on the last row.`
     }
     return null
   }
@@ -106,36 +103,22 @@ export default function LogGameForm({ onSaved }) {
     <form className="ax-card log-game-form" onSubmit={handleSubmit}>
       <h2>log a game</h2>
 
-      <div className="form-grid-2">
-        <div className="form-row">
-          <label className="label-micro">puzzle number</label>
-          <input
-            className="ax-input"
-            type="number"
-            value={puzzleNumber}
-            onChange={(e) => setPuzzleNumber(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-row">
-          <label className="label-micro">result</label>
-          <div className="result-toggle">
-            <button
-              type="button"
-              className={`ax-btn ${won ? 'ax-btn--solid' : ''}`}
-              onClick={() => setWon(true)}
-            >
-              won
-            </button>
-            <button
-              type="button"
-              className={`ax-btn ${!won ? 'ax-btn--solid' : ''}`}
-              onClick={() => setWon(false)}
-            >
-              lost
-            </button>
-          </div>
-        </div>
+      <div className="form-row">
+        <label className="label-micro">puzzle number</label>
+        <input
+          className="ax-input"
+          type="number"
+          value={puzzleNumber}
+          onChange={(e) => setPuzzleNumber(e.target.value)}
+          required
+        />
+      </div>
+
+      <div className="form-row">
+        <label className="label-micro">result</label>
+        <span className={`ax-badge ${won ? 'badge-won' : 'badge-lost'}`}>
+          {won ? 'won' : guesses.length >= MAX_ROWS ? 'lost' : 'in progress'}
+        </span>
       </div>
 
       <div className="guess-row-list">

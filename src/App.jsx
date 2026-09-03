@@ -3,6 +3,7 @@ import { supabase } from './lib/supabaseClient'
 import { useSession } from './lib/useSession'
 import { computeStats, computeGuessDistribution, computeColorsUsed } from './lib/stats'
 import LoginScreen from './components/LoginScreen'
+import HelpModal from './components/HelpModal'
 import StatsPanel from './components/StatsPanel'
 import GuessDistribution from './components/GuessDistribution'
 import ColorsUsed from './components/ColorsUsed'
@@ -16,6 +17,7 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [showLogin, setShowLogin] = useState(false)
+  const [showHelp, setShowHelp] = useState(false)
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -69,6 +71,7 @@ export default function App() {
             <p className="ax-subtitle">personal results tracker for spots</p>
           </div>
           <div className="spots-account-actions">
+            <button className="ax-btn spots-account-link" onClick={() => setShowHelp(true)}>how to play</button>
             {session === undefined ? null : isSignedIn ? (
               <button className="ax-btn spots-account-link" onClick={handleSignOut}>sign out</button>
             ) : (
@@ -110,6 +113,7 @@ export default function App() {
       </main>
 
       {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
     </>
   )
 }

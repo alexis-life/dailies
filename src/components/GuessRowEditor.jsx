@@ -35,7 +35,7 @@ export default function GuessRowEditor({ index, guess, onChange, onRemove, canRe
       </div>
       <div className="guess-row-pegs">
         <PegStepper label="green" value={guess.green} onChange={setGreen} max={4 - guess.gold} />
-        <PegStepper label="gold" value={guess.gold} onChange={setGold} max={4 - guess.green} />
+        <PegStepper label="yellow" value={guess.gold} onChange={setGold} max={4 - guess.green} />
       </div>
     </div>
   )

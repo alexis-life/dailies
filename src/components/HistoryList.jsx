@@ -75,7 +75,15 @@ export default function HistoryList({ games, guessesByGame, isSignedIn, onChange
                   {game.won ? 'won' : 'lost'}
                 </span>
                 <span className="text-meta history-item-note">{game.note}</span>
-                <span className="history-item-chevron">{expanded ? '▲' : '▼'}</span>
+                <svg
+                  className={`history-item-chevron ${expanded ? 'is-expanded' : ''}`}
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                >
+                  <path d="M3 5.5L7 9.5L11 5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </button>
 
               {expanded && (

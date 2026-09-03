@@ -9,6 +9,7 @@ export default function BoardReplay({ guesses }) {
         const grayCount = 4 - g.green_pegs - g.gold_pegs
         return (
           <div className="board-replay-row" key={g.id ?? g.row_index}>
+            <span className="board-replay-index text-meta">#{g.row_index + 1}</span>
             <div className="board-replay-colors">
               {g.colors.map((c, i) => (
                 <span key={i} className="peg-dot peg-dot--sm" style={{ background: pegHex(c) }} />
