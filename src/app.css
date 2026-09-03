@@ -365,7 +365,19 @@
 
 .starter-btn {
   display: inline-flex;
-  gap: 4px;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+}
+
+.starter-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.starter-dot {
+  width: 10px;
+  height: 10px;
 }
 
 .guess-row-actions {

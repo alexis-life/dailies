@@ -217,13 +217,13 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
             <button
               key={i}
               type="button"
-              className="ax-btn starter-btn"
+              className="ax-chip starter-btn"
               onClick={() => addStarterRow(pattern)}
               disabled={guesses.length >= MAX_ROWS}
               title={pattern.join(', ')}
             >
               {pattern.map((key, j) => (
-                <span key={j} className="peg-dot peg-dot--sm" style={{ background: pegHex(key) }} />
+                <span key={j} className="peg-dot starter-dot" style={{ background: pegHex(key) }} />
               ))}
             </button>
           ))}
