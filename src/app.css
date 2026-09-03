@@ -351,6 +351,10 @@
   flex-shrink: 0;
 }
 
+.history-item-count {
+  flex-shrink: 0;
+}
+
 .history-item-note {
   flex: 1;
   min-width: 0;
