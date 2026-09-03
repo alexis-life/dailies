@@ -74,7 +74,7 @@ export default function HistoryList({ games, guessesByGame, isSignedIn, onChange
                 <span className={`ax-badge ${game.won ? 'badge-won' : 'badge-lost'}`}>
                   {game.won ? 'won' : 'lost'}
                 </span>
-                <span className="text-meta history-item-count">
+                <span className="ax-badge badge-count">
                   {game.guess_count} {game.guess_count === 1 ? 'guess' : 'guesses'}
                 </span>
                 <span className="text-meta history-item-note">{game.note}</span>

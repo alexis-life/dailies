@@ -104,7 +104,7 @@ export default function App() {
               ) : (
                 <div className="ax-card">
                   <h2>log a game</h2>
-                  <p className="ax-empty">sign in to log a new game.</p>
+                  <p className="ax-meta log-game-signed-out">sign in to log a new game.</p>
                 </div>
               )}
             </div>

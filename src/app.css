@@ -77,6 +77,10 @@
   margin-bottom: 12px;
 }
 
+.log-game-signed-out {
+  margin-top: 6px;
+}
+
 /* ── Modal (sign-in) ───────────────────────────────── */
 .modal-overlay {
   position: fixed;
@@ -166,6 +170,8 @@
 
 .dist-bar-fill {
   height: 100%;
+  border: 1px solid rgba(82, 46, 56, 0.12);
+  box-sizing: border-box;
   border-radius: var(--radius-pill);
   transition: width 0.2s ease;
 }
@@ -351,7 +357,9 @@
   flex-shrink: 0;
 }
 
-.history-item-count {
+.badge-count {
+  background: var(--bg-hover);
+  color: var(--c7);
   flex-shrink: 0;
 }
 
