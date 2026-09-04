@@ -489,6 +489,30 @@
   flex-shrink: 0;
 }
 
+.history-archive-banner {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .badge-archive {
+    display: none;
+  }
+
+  .history-archive-banner {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 6px;
+    margin-bottom: 10px;
+    background: var(--c1);
+    color: var(--c6);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+}
+
 .history-item-note {
   font-style: italic;
   overflow: hidden;

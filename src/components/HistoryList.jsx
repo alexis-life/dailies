@@ -96,6 +96,7 @@ export default function HistoryList({ games, guessesByGame, isSignedIn, onChange
 
               {expanded && (
                 <div className="history-item-detail">
+                  {game.is_daily === false && <div className="history-archive-banner">archive</div>}
                   <BoardReplay guesses={guessesByGame[game.id] ?? []} />
 
                   {isSignedIn && (
