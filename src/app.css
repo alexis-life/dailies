@@ -60,6 +60,7 @@
 
 @media (max-width: 860px) {
   .page-grid { grid-template-columns: 1fr; }
+  .page-col--side { order: -1; }
 }
 
 /* ── Form basics ───────────────────────────────────── */
@@ -201,10 +202,14 @@
 
 /* ── Stats panel ───────────────────────────────────── */
 .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin-top: 12px;
+}
+
+.stats-grid .ax-stat {
+  flex: 1 1 90px;
 }
 
 /* ── Distribution / colors-used bars ──────────────────── */
