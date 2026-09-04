@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { aniguessrPuzzleDateFor } from '../lib/aniguessrPuzzleDate'
 import { ANIGUESSR_MODES } from './AniguessrLogForm'
 
 function totalFor(game) {
@@ -55,6 +56,7 @@ export default function AniguessrHistoryList({ games, isSignedIn, onEdit, onChan
                   <span className="history-item-puzzle">#{String(game.puzzle_number).padStart(3, '0')}</span>
                   <span className="ax-badge badge-count">{total.toLocaleString()} pts</span>
                   {game.is_daily === false && <span className="ax-badge badge-archive">archive</span>}
+                  <span className="text-meta history-item-date">{aniguessrPuzzleDateFor(game.puzzle_number)}</span>
                   <svg
                     className={`history-item-chevron ${expanded ? 'is-expanded' : ''}`}
                     width="14"

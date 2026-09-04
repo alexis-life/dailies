@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import AniguessrResetCountdown from '../components/AniguessrResetCountdown'
 import AniguessrStatsPanel from '../components/AniguessrStatsPanel'
 import AniguessrLogForm from '../components/AniguessrLogForm'
 import AniguessrHistoryList from '../components/AniguessrHistoryList'
@@ -47,6 +48,7 @@ export default function AniguessrTab({ isSignedIn }) {
       ) : (
         <div className="page-grid">
           <div className="page-col page-col--main">
+            <AniguessrResetCountdown />
             <AniguessrStatsPanel games={games} />
             <AniguessrHistoryList
               games={games}

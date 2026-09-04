@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { parseAniguessrShareText } from '../lib/aniguessrShareText'
 
 const MODES = [
   { key: 'screenshot_score', label: 'screenshot', max: 10000 },
@@ -18,6 +19,8 @@ export default function AniguessrLogForm({ nextPuzzleNumber, onSaved, editingEnt
   const [isDaily, setIsDaily] = useState(true)
   const [scores, setScores] = useState(emptyScores)
   const [note, setNote] = useState('')
+  const [pasteText, setPasteText] = useState('')
+  const [pasteError, setPasteError] = useState(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
 
@@ -45,10 +48,23 @@ export default function AniguessrLogForm({ nextPuzzleNumber, onSaved, editingEnt
     setIsDaily(true)
     setScores(emptyScores())
     setNote('')
+    setPasteText('')
+    setPasteError(null)
   }
 
   function setScore(key, value) {
     setScores((cur) => ({ ...cur, [key]: value }))
+  }
+
+  function handleParsePaste() {
+    setPasteError(null)
+    const parsed = parseAniguessrShareText(pasteText)
+    if (!parsed) {
+      setPasteError("Couldn't find any scores in that text.")
+      return
+    }
+    setScores((cur) => ({ ...cur, ...parsed.scores }))
+    if (parsed.puzzleNumber) setPuzzleNumber(String(parsed.puzzleNumber))
   }
 
   function validate() {
@@ -149,6 +165,23 @@ export default function AniguessrLogForm({ nextPuzzleNumber, onSaved, editingEnt
             </button>
           </div>
         </div>
+      </div>
+
+      <div className="form-row">
+        <label className="label-micro">paste result (optional)</label>
+        <textarea
+          className="ax-input"
+          rows={3}
+          placeholder={'paste the summary share text here…'}
+          value={pasteText}
+          onChange={(e) => setPasteText(e.target.value)}
+        />
+        <div className="guess-row-actions">
+          <button type="button" className="ax-btn" onClick={handleParsePaste} disabled={!pasteText.trim()}>
+            parse
+          </button>
+        </div>
+        {pasteError && <p className="ax-meta form-error">{pasteError}</p>}
       </div>
 
       <div className="form-grid-2">
