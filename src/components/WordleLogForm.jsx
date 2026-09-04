@@ -12,7 +12,7 @@ function emptyGuess() {
   return { letters: Array(WORD_LENGTH).fill(null), statuses: Array(WORD_LENGTH).fill('gray') }
 }
 
-export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
+export default function WordleLogForm({ nextPuzzleNumber, onSaved, editingEntry, editingGuesses, onCancelEdit }) {
   const [puzzleNumber, setPuzzleNumber] = useState('')
   const [isDaily, setIsDaily] = useState(true)
   const [autoSolve, setAutoSolve] = useState(true)
@@ -51,8 +51,23 @@ export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
   })
 
   useEffect(() => {
+    if (editingEntry) return
     setPuzzleNumber((current) => (current === '' ? String(nextPuzzleNumber ?? '') : current))
-  }, [nextPuzzleNumber])
+  }, [nextPuzzleNumber, editingEntry])
+
+  useEffect(() => {
+    if (!editingEntry) return
+    const sortedGuesses = [...(editingGuesses ?? [])].sort((a, b) => a.row_index - b.row_index)
+    setPuzzleNumber(String(editingEntry.puzzle_number))
+    setIsDaily(editingEntry.is_daily !== false)
+    setAutoSolve(false)
+    setNote(editingEntry.note ?? '')
+    setGuesses(
+      sortedGuesses.length
+        ? sortedGuesses.map((g) => ({ letters: g.payload.letters, statuses: g.payload.statuses }))
+        : [emptyGuess()]
+    )
+  }, [editingEntry, editingGuesses])
 
   function updateGuess(i, next) {
     setGuesses((rows) => rows.map((r, idx) => (idx === i ? next : r)))
@@ -104,7 +119,7 @@ export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
       return `Fill in all ${WORD_LENGTH} letters on your final (winning) guess so feedback can be calculated.`
     }
     if (!won && guesses.length < MAX_ROWS) {
-      return `Not a win yet — add more guesses (up to ${MAX_ROWS}) or mark all ${WORD_LENGTH} letters green on the last row.`
+      return `Not a win yet: add more guesses (up to ${MAX_ROWS}) or mark all ${WORD_LENGTH} letters green on the last row.`
     }
     return null
   }
@@ -119,24 +134,48 @@ export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
     setSaving(true)
     setError(null)
 
-    const { data: entry, error: entryError } = await supabase
-      .from('dailies_entries')
-      .insert({
-        game: 'wordle',
-        puzzle_number: Number(puzzleNumber),
-        won,
-        guess_count: hasRevealRow ? MAX_ROWS : guesses.length,
-        note: note.trim() || null,
-        is_daily: isDaily,
-        solution: hasRevealRow ? revealRow.letters : null,
-      })
-      .select()
-      .single()
+    const fields = {
+      game: 'wordle',
+      puzzle_number: Number(puzzleNumber),
+      won,
+      guess_count: hasRevealRow ? MAX_ROWS : guesses.length,
+      note: note.trim() || null,
+      is_daily: isDaily,
+      solution: editingEntry ? editingEntry.solution : hasRevealRow ? revealRow.letters : null,
+    }
 
-    if (entryError) {
-      setError(entryError.message)
-      setSaving(false)
-      return
+    let entry
+    if (editingEntry) {
+      const { data, error: entryError } = await supabase
+        .from('dailies_entries')
+        .update(fields)
+        .eq('id', editingEntry.id)
+        .select()
+        .single()
+      if (entryError) {
+        setError(entryError.message)
+        setSaving(false)
+        return
+      }
+      entry = data
+      const { error: deleteError } = await supabase.from('dailies_entry_guesses').delete().eq('entry_id', entry.id)
+      if (deleteError) {
+        setError(deleteError.message)
+        setSaving(false)
+        return
+      }
+    } else {
+      const { data, error: entryError } = await supabase
+        .from('dailies_entries')
+        .insert(fields)
+        .select()
+        .single()
+      if (entryError) {
+        setError(entryError.message)
+        setSaving(false)
+        return
+      }
+      entry = data
     }
 
     const guessRows = realGuesses.map((g, i) => {
@@ -154,7 +193,7 @@ export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
     const { error: guessesError } = await supabase.from('dailies_entry_guesses').insert(guessRows)
 
     if (guessesError) {
-      await supabase.from('dailies_entries').delete().eq('id', entry.id)
+      if (!editingEntry) await supabase.from('dailies_entries').delete().eq('id', entry.id)
       setError(guessesError.message)
       setSaving(false)
       return
@@ -163,11 +202,12 @@ export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
     setSaving(false)
     resetForm()
     onSaved?.()
+    onCancelEdit?.()
   }
 
   return (
     <form className="ax-card log-game-form" onSubmit={handleSubmit}>
-      <h2>log a game</h2>
+      <h2>{editingEntry ? `edit game #${editingEntry.puzzle_number}` : 'log a game'}</h2>
 
       <div className="form-grid-2">
         <div className="form-row">
@@ -270,9 +310,16 @@ export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
 
       {error && <p className="ax-meta form-error">{error}</p>}
 
-      <button className="ax-btn ax-btn--solid" type="submit" disabled={saving}>
-        {saving ? 'saving…' : 'save game'}
-      </button>
+      <div className="guess-row-actions">
+        <button className="ax-btn ax-btn--solid" type="submit" disabled={saving}>
+          {saving ? 'saving…' : editingEntry ? 'save changes' : 'save game'}
+        </button>
+        {editingEntry && (
+          <button type="button" className="ax-btn" onClick={() => { resetForm(); onCancelEdit?.() }}>
+            cancel edit
+          </button>
+        )}
+      </div>
     </form>
   )
 }

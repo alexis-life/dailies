@@ -27,7 +27,7 @@ export default function WordleHelpModal({ onClose }) {
             after each guess, every letter tile changes color. a <strong>green</strong> tile means
             that letter is correct and in the right spot. a <strong>yellow</strong> tile means the
             letter is in the word but in the wrong spot. a <strong>gray</strong> tile means the
-            letter isn't in the word at all — unlike SPOTS, the colors sit directly on the letters
+            letter isn't in the word at all. unlike SPOTS, the colors sit directly on the letters
             you guessed, not as a separate set of pegs.
           </p>
           <div className="help-example-row">

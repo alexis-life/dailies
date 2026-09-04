@@ -12,7 +12,9 @@ const IMPORTED_NOTE = 'imported from NYT stats (placeholder)'
 
 export default function StrandsGame({ isSignedIn }) {
   const [games, setGames] = useState([])
+  const [guesses, setGuesses] = useState([])
   const [spangramFirstSeed, setSpangramFirstSeed] = useState(0)
+  const [editingEntry, setEditingEntry] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -20,12 +22,27 @@ export default function StrandsGame({ isSignedIn }) {
     setLoading(true)
     setError(null)
 
-    const [gamesRes, counterRes] = await Promise.all([
-      supabase
-        .from('dailies_entries')
-        .select('*')
-        .eq('game', 'strands')
-        .order('puzzle_number', { ascending: true }),
+    const gamesRes = await supabase
+      .from('dailies_entries')
+      .select('*')
+      .eq('game', 'strands')
+      .order('puzzle_number', { ascending: true })
+
+    if (gamesRes.error) {
+      setError(gamesRes.error.message)
+      setLoading(false)
+      return
+    }
+
+    const entryIds = (gamesRes.data ?? []).map((g) => g.id)
+    const [guessesRes, counterRes] = await Promise.all([
+      entryIds.length
+        ? supabase
+            .from('dailies_entry_guesses')
+            .select('*')
+            .in('entry_id', entryIds)
+            .order('row_index', { ascending: true })
+        : Promise.resolve({ data: [], error: null }),
       supabase
         .from('dailies_counters')
         .select('value')
@@ -34,13 +51,14 @@ export default function StrandsGame({ isSignedIn }) {
         .maybeSingle(),
     ])
 
-    if (gamesRes.error) {
-      setError(gamesRes.error.message)
+    if (guessesRes.error) {
+      setError(guessesRes.error.message)
       setLoading(false)
       return
     }
 
     setGames(gamesRes.data ?? [])
+    setGuesses(guessesRes.data ?? [])
     setSpangramFirstSeed(counterRes.data?.value ?? 0)
     setLoading(false)
   }, [])
@@ -54,9 +72,17 @@ export default function StrandsGame({ isSignedIn }) {
     ? Math.max(...dailyGames.map((g) => g.puzzle_number)) + 1
     : ''
 
+  const guessesByGame = guesses.reduce((acc, g) => {
+    (acc[g.entry_id] ??= []).push(g)
+    return acc
+  }, {})
+
   const stats = computeStats(games)
   const solvedWithoutHints = games.filter((g) => g.won && (g.hints_used ?? 0) === 0).length
-  const spangramFirst = spangramFirstSeed + games.filter((g) => g.spangram_first).length
+  const spangramFirst = spangramFirstSeed + games.filter((g) => {
+    const sequence = guessesByGame[g.id]
+    return sequence?.length ? sequence[0].payload.type === 'spangram' : g.spangram_first
+  }).length
   const historyGames = games.filter((g) => g.note !== IMPORTED_NOTE)
 
   return (
@@ -68,11 +94,23 @@ export default function StrandsGame({ isSignedIn }) {
         <div className="page-grid">
           <div className="page-col page-col--main">
             <StrandsStatsPanel stats={stats} spangramFirst={spangramFirst} solvedWithoutHints={solvedWithoutHints} />
-            <StrandsHistoryList games={historyGames} isSignedIn={isSignedIn} onChanged={loadData} />
+            <StrandsHistoryList
+              games={historyGames}
+              guessesByGame={guessesByGame}
+              isSignedIn={isSignedIn}
+              onEdit={setEditingEntry}
+              onChanged={loadData}
+            />
           </div>
           <div className="page-col page-col--side">
             {isSignedIn ? (
-              <StrandsLogForm nextPuzzleNumber={nextPuzzleNumber} onSaved={loadData} />
+              <StrandsLogForm
+                nextPuzzleNumber={nextPuzzleNumber}
+                onSaved={loadData}
+                editingEntry={editingEntry}
+                editingGuesses={editingEntry ? guessesByGame[editingEntry.id] : null}
+                onCancelEdit={() => setEditingEntry(null)}
+              />
             ) : (
               <div className="ax-card">
                 <h2>log a game</h2>

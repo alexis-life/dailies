@@ -25,7 +25,7 @@ export default function LoginScreen({ onClose }) {
     <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose?.() }}>
       <div className="ax-card modal-panel" style={{ maxWidth: 360 }}>
         <h1 className="ax-title" style={{ marginBottom: 4 }}>sign in</h1>
-        <p className="ax-subtitle" style={{ marginBottom: 20 }}>sign in to log or edit games — viewing stats never requires it.</p>
+        <p className="ax-subtitle" style={{ marginBottom: 20 }}>sign in to log or edit games, viewing stats never requires it.</p>
         <form onSubmit={handleSubmit}>
           <div className="form-row">
             <label className="label-micro">email</label>

@@ -36,7 +36,7 @@ export default function HelpModal({ onClose }) {
             after each guess you get feedback pegs. a <strong>green</strong> peg means a correct
             color in the correct position. a <strong>yellow</strong> peg means a correct color in
             the wrong position. any leftover pegs are gray. the feedback pegs don't line up with
-            the guess slots — they're just counts.
+            the guess slots, they're just counts.
           </p>
           <div className="help-example-row">
             <div className="board-replay-row">
@@ -55,7 +55,7 @@ export default function HelpModal({ onClose }) {
             </div>
           </div>
           <p className="ax-meta help-example-caption">
-            2 green, 1 yellow, 1 gray — meaning 2 of these 4 colors are exactly right, 1 more
+            2 green, 1 yellow, 1 gray: meaning 2 of these 4 colors are exactly right, 1 more
             color is right but in the wrong slot, and 1 doesn't belong.
           </p>
         </section>

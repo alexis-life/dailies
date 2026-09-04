@@ -1,22 +1,19 @@
 import { useState } from 'react'
 import { useHashSubTab } from '../lib/useHashTab'
-import WordleGame from './nyt/WordleGame'
-import WordleHelpModal from '../components/WordleHelpModal'
-import ConnectionsGame from './nyt/ConnectionsGame'
-import ConnectionsHelpModal from '../components/ConnectionsHelpModal'
-import StrandsGame from './nyt/StrandsGame'
-import StrandsHelpModal from '../components/StrandsHelpModal'
+import LoldleClassicGame from './loldle/LoldleClassicGame'
+import LoldleClassicHelpModal from '../components/LoldleClassicHelpModal'
+import LoldleEmojiGame from './loldle/LoldleEmojiGame'
+import LoldleEmojiHelpModal from '../components/LoldleEmojiHelpModal'
 
-const NYT_GAMES = [
-  { key: 'wordle', label: 'wordle', Component: WordleGame, HelpModal: WordleHelpModal },
-  { key: 'connections', label: 'connections', Component: ConnectionsGame, HelpModal: ConnectionsHelpModal },
-  { key: 'strands', label: 'strands', Component: StrandsGame, HelpModal: StrandsHelpModal },
+const LOLDLE_GAMES = [
+  { key: 'classic', label: 'classic', Component: LoldleClassicGame, HelpModal: LoldleClassicHelpModal },
+  { key: 'emoji', label: 'emoji', Component: LoldleEmojiGame, HelpModal: LoldleEmojiHelpModal },
 ]
 
-export default function NytTab({ isSignedIn }) {
-  const [activeGame, setActiveGame] = useHashSubTab('nyt', NYT_GAMES[0].key, NYT_GAMES.map((g) => g.key))
+export default function LoldleTab({ isSignedIn }) {
+  const [activeGame, setActiveGame] = useHashSubTab('loldle', LOLDLE_GAMES[0].key, LOLDLE_GAMES.map((g) => g.key))
   const [showHelp, setShowHelp] = useState(false)
-  const activeConfig = NYT_GAMES.find((g) => g.key === activeGame)
+  const activeConfig = LOLDLE_GAMES.find((g) => g.key === activeGame)
   const ActiveGameComponent = activeConfig.Component
   const ActiveHelpModal = activeConfig.HelpModal
 
@@ -24,7 +21,7 @@ export default function NytTab({ isSignedIn }) {
     <>
       <div className="ax-card nyt-game-toggle">
         <nav className="ax-tabs">
-          {NYT_GAMES.map((g) => (
+          {LOLDLE_GAMES.map((g) => (
             <button
               key={g.key}
               type="button"

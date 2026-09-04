@@ -13,7 +13,7 @@ export default function ConnectionsHelpModal({ onClose }) {
           <h2 className="label-micro">objective</h2>
           <p className="ax-meta">
             find groups of four words that share something in common. there are 4 categories,
-            color-coded from easiest to trickiest.
+            color-coded from straightforward (yellow) to tricky (purple):
           </p>
           <div className="help-swatch-row">
             {CONNECTIONS_COLORS.map((c) => (
@@ -32,8 +32,12 @@ export default function ConnectionsHelpModal({ onClose }) {
         <section className="help-section">
           <h2 className="label-micro">reading feedback</h2>
           <p className="ax-meta">
-            unlike SPOTS or Wordle, there's nothing to compute — a guess is <strong>solved</strong> the
+            unlike SPOTS or Wordle, there's nothing to compute: a guess is <strong>solved</strong> the
             moment all 4 colors you picked match each other, and a <strong>mistake</strong> otherwise.
+          </p>
+          <p className="ax-meta help-example-caption">
+            each puzzle has exactly one solution, so watch out for words that seem to belong to
+            multiple categories.
           </p>
         </section>
 

@@ -1,15 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import { computeStats, computeGuessDistribution, computeColorsUsed } from '../lib/stats'
-import StatsPanel from '../components/StatsPanel'
-import GuessDistribution from '../components/GuessDistribution'
-import ColorsUsed from '../components/ColorsUsed'
-import LogGameForm from '../components/LogGameForm'
-import HistoryList from '../components/HistoryList'
+import AniguessrStatsPanel from '../components/AniguessrStatsPanel'
+import AniguessrLogForm from '../components/AniguessrLogForm'
+import AniguessrHistoryList from '../components/AniguessrHistoryList'
 
-export default function SpotsTab({ isSignedIn }) {
+export default function AniguessrTab({ isSignedIn }) {
   const [games, setGames] = useState([])
-  const [guesses, setGuesses] = useState([])
   const [editingEntry, setEditingEntry] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -18,24 +14,19 @@ export default function SpotsTab({ isSignedIn }) {
     setLoading(true)
     setError(null)
 
-    const [gamesRes, guessesRes] = await Promise.all([
-      supabase.from('spots_games').select('*').order('puzzle_number', { ascending: true }),
-      supabase.from('spots_guesses').select('*').order('row_index', { ascending: true }),
-    ])
+    const gamesRes = await supabase
+      .from('dailies_entries')
+      .select('*')
+      .eq('game', 'aniguessr')
+      .order('puzzle_number', { ascending: true })
 
     if (gamesRes.error) {
       setError(gamesRes.error.message)
       setLoading(false)
       return
     }
-    if (guessesRes.error) {
-      setError(guessesRes.error.message)
-      setLoading(false)
-      return
-    }
 
     setGames(gamesRes.data ?? [])
-    setGuesses(guessesRes.data ?? [])
     setLoading(false)
   }, [])
 
@@ -43,19 +34,10 @@ export default function SpotsTab({ isSignedIn }) {
     loadData()
   }, [loadData])
 
-  const guessesByGame = guesses.reduce((acc, g) => {
-    (acc[g.game_id] ??= []).push(g)
-    return acc
-  }, {})
-
   const dailyGames = games.filter((g) => g.is_daily !== false)
   const nextPuzzleNumber = dailyGames.length
     ? Math.max(...dailyGames.map((g) => g.puzzle_number)) + 1
     : ''
-
-  const stats = computeStats(games)
-  const distribution = computeGuessDistribution(games)
-  const colorCounts = computeColorsUsed(guesses)
 
   return (
     <>
@@ -65,12 +47,9 @@ export default function SpotsTab({ isSignedIn }) {
       ) : (
         <div className="page-grid">
           <div className="page-col page-col--main">
-            <StatsPanel stats={stats} />
-            <GuessDistribution distribution={distribution} total={stats.played} />
-            <ColorsUsed counts={colorCounts} />
-            <HistoryList
+            <AniguessrStatsPanel games={games} />
+            <AniguessrHistoryList
               games={games}
-              guessesByGame={guessesByGame}
               isSignedIn={isSignedIn}
               onEdit={setEditingEntry}
               onChanged={loadData}
@@ -78,17 +57,16 @@ export default function SpotsTab({ isSignedIn }) {
           </div>
           <div className="page-col page-col--side">
             {isSignedIn ? (
-              <LogGameForm
+              <AniguessrLogForm
                 nextPuzzleNumber={nextPuzzleNumber}
                 onSaved={loadData}
                 editingEntry={editingEntry}
-                editingGuesses={editingEntry ? guessesByGame[editingEntry.id] : null}
                 onCancelEdit={() => setEditingEntry(null)}
               />
             ) : (
               <div className="ax-card">
-                <h2>log a game</h2>
-                <p className="ax-meta log-game-signed-out">sign in to log a new game.</p>
+                <h2>log a day</h2>
+                <p className="ax-meta log-game-signed-out">sign in to log a new day.</p>
               </div>
             )}
           </div>

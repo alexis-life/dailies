@@ -6,10 +6,15 @@ import LoginScreen from './components/LoginScreen'
 import HelpModal from './components/HelpModal'
 import SpotsTab from './tabs/SpotsTab'
 import NytTab from './tabs/NytTab'
+import AniguessrTab from './tabs/AniguessrTab'
+import AniguessrHelpModal from './components/AniguessrHelpModal'
+import LoldleTab from './tabs/LoldleTab'
 
 const TABS = [
   { key: 'spots', label: 'spots', Component: SpotsTab, HelpModal },
   { key: 'nyt', label: 'nyt', Component: NytTab },
+  { key: 'aniguessr', label: 'aniguessr', Component: AniguessrTab, HelpModal: AniguessrHelpModal, signedInOnly: true },
+  { key: 'loldle', label: 'loldle', Component: LoldleTab },
 ]
 
 export default function App() {

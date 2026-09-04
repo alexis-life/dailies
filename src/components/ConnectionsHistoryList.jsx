@@ -3,10 +3,8 @@ import { supabase } from '../lib/supabaseClient'
 import { connectionsPuzzleDateFor } from '../lib/connectionsPuzzleDate'
 import ConnectionsBoardReplay from './ConnectionsBoardReplay'
 
-export default function ConnectionsHistoryList({ games, guessesByGame, isSignedIn, onChanged }) {
+export default function ConnectionsHistoryList({ games, guessesByGame, isSignedIn, onEdit, onChanged }) {
   const [expandedId, setExpandedId] = useState(null)
-  const [editingId, setEditingId] = useState(null)
-  const [noteDraft, setNoteDraft] = useState('')
   const [busyId, setBusyId] = useState(null)
   const [error, setError] = useState(null)
 
@@ -14,27 +12,6 @@ export default function ConnectionsHistoryList({ games, guessesByGame, isSignedI
 
   function toggleExpand(id) {
     setExpandedId((cur) => (cur === id ? null : id))
-  }
-
-  function startEdit(game) {
-    setEditingId(game.id)
-    setNoteDraft(game.note ?? '')
-  }
-
-  async function saveNote(id) {
-    setBusyId(id)
-    setError(null)
-    const { error: updateError } = await supabase
-      .from('dailies_entries')
-      .update({ note: noteDraft.trim() || null })
-      .eq('id', id)
-    setBusyId(null)
-    if (updateError) {
-      setError(updateError.message)
-      return
-    }
-    setEditingId(null)
-    onChanged?.()
   }
 
   async function deleteGame(id) {
@@ -66,7 +43,6 @@ export default function ConnectionsHistoryList({ games, guessesByGame, isSignedI
       <div className="history-list">
         {sorted.map((game) => {
           const expanded = expandedId === game.id
-          const editing = editingId === game.id
           const busy = busyId === game.id
           return (
             <div className="history-item" key={game.id}>
@@ -101,33 +77,14 @@ export default function ConnectionsHistoryList({ games, guessesByGame, isSignedI
 
                   {isSignedIn && (
                     <div className="history-item-actions">
-                      {editing ? (
-                        <>
-                          <textarea
-                            className="ax-input"
-                            rows={2}
-                            value={noteDraft}
-                            onChange={(e) => setNoteDraft(e.target.value)}
-                          />
-                          <div className="history-item-actions-row">
-                            <button className="ax-btn ax-btn--solid" disabled={busy} onClick={() => saveNote(game.id)}>
-                              save note
-                            </button>
-                            <button className="ax-btn" disabled={busy} onClick={() => setEditingId(null)}>
-                              cancel
-                            </button>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="history-item-actions-row">
-                          <button className="ax-btn" disabled={busy} onClick={() => startEdit(game)}>
-                            edit note
-                          </button>
-                          <button className="ax-btn" disabled={busy} onClick={() => deleteGame(game.id)}>
-                            {busy ? 'deleting…' : 'delete'}
-                          </button>
-                        </div>
-                      )}
+                      <div className="history-item-actions-row">
+                        <button className="ax-btn" disabled={busy} onClick={() => onEdit?.(game)}>
+                          edit
+                        </button>
+                        <button className="ax-btn" disabled={busy} onClick={() => deleteGame(game.id)}>
+                          {busy ? 'deleting…' : 'delete'}
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>

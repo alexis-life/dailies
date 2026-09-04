@@ -15,6 +15,7 @@ export default function ConnectionsGame({ isSignedIn }) {
   const [games, setGames] = useState([])
   const [guesses, setGuesses] = useState([])
   const [purpleFirstSeed, setPurpleFirstSeed] = useState(0)
+  const [editingEntry, setEditingEntry] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -103,12 +104,19 @@ export default function ConnectionsGame({ isSignedIn }) {
               games={historyGames}
               guessesByGame={guessesByGame}
               isSignedIn={isSignedIn}
+              onEdit={setEditingEntry}
               onChanged={loadData}
             />
           </div>
           <div className="page-col page-col--side">
             {isSignedIn ? (
-              <ConnectionsLogForm nextPuzzleNumber={nextPuzzleNumber} onSaved={loadData} />
+              <ConnectionsLogForm
+                nextPuzzleNumber={nextPuzzleNumber}
+                onSaved={loadData}
+                editingEntry={editingEntry}
+                editingGuesses={editingEntry ? guessesByGame[editingEntry.id] : null}
+                onCancelEdit={() => setEditingEntry(null)}
+              />
             ) : (
               <div className="ax-card">
                 <h2>log a game</h2>

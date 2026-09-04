@@ -3,17 +3,12 @@ import { supabase } from '../../lib/supabaseClient'
 import { computeStats, computeGuessDistribution } from '../../lib/stats'
 import StatsPanel from '../../components/StatsPanel'
 import GuessDistribution from '../../components/GuessDistribution'
-import WordleLogForm from '../../components/WordleLogForm'
-import WordleHistoryList from '../../components/WordleHistoryList'
+import LoldleClassicLogForm from '../../components/LoldleClassicLogForm'
+import LoldleClassicHistoryList from '../../components/LoldleClassicHistoryList'
 
-const MAX_ROWS = 6
+const DISTRIBUTION_MAX_ROWS = 15
 
-// Backfilled placeholder entries (see the one-off SQL import) carry this exact
-// note so they can count toward stats/distribution without cluttering history,
-// since they have no real per-guess data to show in a board replay anyway.
-const IMPORTED_NOTE = 'imported from NYT stats (placeholder)'
-
-export default function WordleGame({ isSignedIn }) {
+export default function LoldleClassicGame({ isSignedIn }) {
   const [games, setGames] = useState([])
   const [guesses, setGuesses] = useState([])
   const [editingEntry, setEditingEntry] = useState(null)
@@ -27,7 +22,7 @@ export default function WordleGame({ isSignedIn }) {
     const gamesRes = await supabase
       .from('dailies_entries')
       .select('*')
-      .eq('game', 'wordle')
+      .eq('game', 'loldle_classic')
       .order('puzzle_number', { ascending: true })
 
     if (gamesRes.error) {
@@ -71,8 +66,7 @@ export default function WordleGame({ isSignedIn }) {
     : ''
 
   const stats = computeStats(games)
-  const distribution = computeGuessDistribution(games, MAX_ROWS)
-  const historyGames = games.filter((g) => g.note !== IMPORTED_NOTE)
+  const distribution = computeGuessDistribution(games, DISTRIBUTION_MAX_ROWS)
 
   return (
     <>
@@ -84,8 +78,8 @@ export default function WordleGame({ isSignedIn }) {
           <div className="page-col page-col--main">
             <StatsPanel stats={stats} />
             <GuessDistribution distribution={distribution} total={stats.played} />
-            <WordleHistoryList
-              games={historyGames}
+            <LoldleClassicHistoryList
+              games={games}
               guessesByGame={guessesByGame}
               isSignedIn={isSignedIn}
               onEdit={setEditingEntry}
@@ -94,7 +88,7 @@ export default function WordleGame({ isSignedIn }) {
           </div>
           <div className="page-col page-col--side">
             {isSignedIn ? (
-              <WordleLogForm
+              <LoldleClassicLogForm
                 nextPuzzleNumber={nextPuzzleNumber}
                 onSaved={loadData}
                 editingEntry={editingEntry}
