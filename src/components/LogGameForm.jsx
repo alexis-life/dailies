@@ -44,6 +44,8 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
 
   const lastGuess = guesses[guesses.length - 1]
   const won = hasRevealRow ? false : autoSolve ? solutionReady : lastGuess.green === 4
+  const lastGuessEmpty = lastGuess.colors.every((c) => !c)
+  const canAddStarter = !hasRevealRow && (lastGuessEmpty || guesses.length < rowCap)
 
   const feedbackByRow = guesses.map((g, i) => {
     if (hasRevealRow && i === MAX_ROWS) return null
@@ -66,7 +68,14 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
   }
 
   function addStarterRow(colors) {
-    setGuesses((rows) => (rows.length >= rowCap ? rows : [...rows, { colors: [...colors], green: 0, gold: 0 }]))
+    setGuesses((rows) => {
+      const last = rows[rows.length - 1]
+      const filled = { colors: [...colors], green: 0, gold: 0 }
+      if (last.colors.every((c) => !c)) {
+        return rows.map((r, idx) => (idx === rows.length - 1 ? filled : r))
+      }
+      return rows.length >= rowCap ? rows : [...rows, filled]
+    })
   }
 
   function removeRow(i) {
@@ -237,7 +246,7 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
             type="button"
             className="ax-chip starter-btn"
             onClick={() => addStarterRow(pattern)}
-            disabled={guesses.length >= rowCap}
+            disabled={!canAddStarter}
             title={pattern.join(', ')}
           >
             {pattern.map((key, j) => (

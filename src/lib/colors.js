@@ -13,3 +13,16 @@ export const PEG_COLOR_MAP = Object.fromEntries(PEG_COLORS.map((c) => [c.key, c]
 export function pegHex(key) {
   return PEG_COLOR_MAP[key]?.hex ?? '#ccc'
 }
+
+// NYT Connections' own fixed category palette — yellow is always the
+// easiest category, purple always the trickiest.
+export const CONNECTIONS_COLORS = [
+  { key: 'yellow', label: 'yellow', hex: '#f9df6d' },
+  { key: 'green', label: 'green', hex: '#a0c35a' },
+  { key: 'blue', label: 'blue', hex: '#b0c4ef' },
+  { key: 'purple', label: 'purple', hex: '#ba81c5' },
+]
+
+export function connectionsHex(key) {
+  return CONNECTIONS_COLORS.find((c) => c.key === key)?.hex ?? '#ccc'
+}

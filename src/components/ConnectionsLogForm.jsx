@@ -1,54 +1,31 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import { computeLetterFeedback } from '../lib/feedback'
-import WordleGuessRowEditor from './WordleGuessRowEditor'
+import { connectionsHex } from '../lib/colors'
+import ConnectionsGuessRowEditor from './ConnectionsGuessRowEditor'
 
-const MAX_ROWS = 6
-const WORD_LENGTH = 5
-
-const STARTERS = ['PENIS']
+const MAX_ROWS = 8
+const STARTERS = ['yellow', 'green', 'blue', 'purple']
 
 function emptyGuess() {
-  return { letters: Array(WORD_LENGTH).fill(null), statuses: Array(WORD_LENGTH).fill('gray') }
+  return { colors: [null, null, null, null] }
 }
 
-export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
+export default function ConnectionsLogForm({ nextPuzzleNumber, onSaved }) {
   const [puzzleNumber, setPuzzleNumber] = useState('')
   const [isDaily, setIsDaily] = useState(true)
-  const [autoSolve, setAutoSolve] = useState(true)
   const [note, setNote] = useState('')
   const [guesses, setGuesses] = useState([emptyGuess()])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
 
-  const rowCap = autoSolve ? MAX_ROWS + 1 : MAX_ROWS
-  const hasRevealRow = autoSolve && guesses.length > MAX_ROWS
-  const revealRow = hasRevealRow ? guesses[MAX_ROWS] : null
-  const revealFilled = revealRow ? revealRow.letters.every((c) => c) : false
-
-  const realGuesses = guesses.slice(0, MAX_ROWS)
-  const filledRealGuesses = realGuesses.filter((g) => g.letters.every((c) => c))
-  const lastFilledRealGuess = filledRealGuesses[filledRealGuesses.length - 1]
-
-  const solution = hasRevealRow
-    ? (revealFilled ? revealRow.letters : null)
-    : (lastFilledRealGuess?.letters ?? null)
-  const solutionReady = autoSolve && Boolean(solution)
-
-  const lastGuess = guesses[guesses.length - 1]
-  const won = hasRevealRow
-    ? false
-    : autoSolve
-      ? solutionReady
-      : lastGuess.statuses.every((s) => s === 'green')
-  const lastGuessEmpty = lastGuess.letters.every((c) => !c)
-  const canAddStarter = !hasRevealRow && (lastGuessEmpty || guesses.length < rowCap)
-
-  const feedbackByRow = guesses.map((g, i) => {
-    if (hasRevealRow && i === MAX_ROWS) return null
-    if (!solutionReady) return null
-    return g.letters.every((c) => c) ? computeLetterFeedback(g.letters, solution) : null
-  })
+  const filledGuesses = guesses.filter((g) => g.colors.every((c) => c))
+  const solvedRows = filledGuesses.filter((g) => g.colors.every((c) => c === g.colors[0]))
+  const mistakeRows = filledGuesses.filter((g) => !g.colors.every((c) => c === g.colors[0]))
+  const solvedColors = new Set(solvedRows.map((g) => g.colors[0]))
+  const won = solvedColors.size === 4
+  const lost = !won && mistakeRows.length >= 4
+  const lastGuessEmpty = guesses[guesses.length - 1].colors.every((c) => !c)
+  const canAddStarter = lastGuessEmpty || guesses.length < MAX_ROWS
 
   useEffect(() => {
     setPuzzleNumber((current) => (current === '' ? String(nextPuzzleNumber ?? '') : current))
@@ -59,17 +36,17 @@ export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
   }
 
   function addRow() {
-    setGuesses((rows) => (rows.length >= rowCap ? rows : [...rows, emptyGuess()]))
+    setGuesses((rows) => (rows.length >= MAX_ROWS ? rows : [...rows, emptyGuess()]))
   }
 
-  function addStarterRow(word) {
+  function addStarterRow(color) {
     setGuesses((rows) => {
       const last = rows[rows.length - 1]
-      const filled = { letters: word.split(''), statuses: Array(WORD_LENGTH).fill('gray') }
-      if (last.letters.every((c) => !c)) {
+      const filled = { colors: [color, color, color, color] }
+      if (last.colors.every((c) => !c)) {
         return rows.map((r, idx) => (idx === rows.length - 1 ? filled : r))
       }
-      return rows.length >= rowCap ? rows : [...rows, filled]
+      return rows.length >= MAX_ROWS ? rows : [...rows, filled]
     })
   }
 
@@ -80,7 +57,6 @@ export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
   function resetForm() {
     setPuzzleNumber('')
     setIsDaily(true)
-    setAutoSolve(true)
     setNote('')
     setGuesses([emptyGuess()])
   }
@@ -89,22 +65,13 @@ export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
     if (!puzzleNumber || Number.isNaN(Number(puzzleNumber))) {
       return 'Enter a puzzle number.'
     }
-    for (const g of realGuesses) {
-      if (g.letters.some((c) => !c)) {
-        return `Every guess row needs all ${WORD_LENGTH} letters filled in.`
+    for (const g of guesses) {
+      if (g.colors.some((c) => !c)) {
+        return 'Every guess row needs all 4 colors filled in.'
       }
     }
-    if (hasRevealRow) {
-      if (!revealFilled) {
-        return `Fill in the revealed solution's ${WORD_LENGTH} letters before saving.`
-      }
-      return null
-    }
-    if (autoSolve && !solutionReady) {
-      return `Fill in all ${WORD_LENGTH} letters on your final (winning) guess so feedback can be calculated.`
-    }
-    if (!won && guesses.length < MAX_ROWS) {
-      return `Not a win yet — add more guesses (up to ${MAX_ROWS}) or mark all ${WORD_LENGTH} letters green on the last row.`
+    if (!won && !lost) {
+      return 'Not finished yet — keep guessing until you solve all 4 categories or hit 4 mistakes.'
     }
     return null
   }
@@ -122,13 +89,12 @@ export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
     const { data: entry, error: entryError } = await supabase
       .from('dailies_entries')
       .insert({
-        game: 'wordle',
+        game: 'connections',
         puzzle_number: Number(puzzleNumber),
         won,
-        guess_count: hasRevealRow ? MAX_ROWS : guesses.length,
+        guess_count: guesses.length,
         note: note.trim() || null,
         is_daily: isDaily,
-        solution: hasRevealRow ? revealRow.letters : null,
       })
       .select()
       .single()
@@ -139,17 +105,11 @@ export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
       return
     }
 
-    const guessRows = realGuesses.map((g, i) => {
-      const feedback = feedbackByRow[i]
-      return {
-        entry_id: entry.id,
-        row_index: i,
-        payload: {
-          letters: g.letters,
-          statuses: feedback ? feedback.statuses : g.statuses,
-        },
-      }
-    })
+    const guessRows = guesses.map((g, i) => ({
+      entry_id: entry.id,
+      row_index: i,
+      payload: { colors: g.colors },
+    }))
 
     const { error: guessesError } = await supabase.from('dailies_entry_guesses').insert(guessRows)
 
@@ -204,29 +164,14 @@ export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
       <div className="form-row">
         <label className="label-micro">result</label>
         <span className={`ax-badge ${won ? 'badge-won' : 'badge-lost'}`}>
-          {won ? 'won' : hasRevealRow || guesses.length >= MAX_ROWS ? 'lost' : 'in progress'}
+          {won ? 'won' : lost ? 'lost' : 'in progress'}
         </span>
       </div>
 
-      <label className="auto-solve-toggle">
-        <input
-          type="checkbox"
-          checked={autoSolve}
-          onChange={(e) => setAutoSolve(e.target.checked)}
-        />
-        <span className="toggle-switch-track">
-          <span className="toggle-switch-thumb" />
-        </span>
-        <span className="text-meta">auto-calculate feedback</span>
-      </label>
-
       <div className="guess-row-list">
         {guesses.map((g, i) => (
-          <WordleGuessRowEditor
+          <ConnectionsGuessRowEditor
             key={i}
-            feedback={feedbackByRow[i]}
-            autoSolve={autoSolve}
-            isRevealRow={hasRevealRow && i === MAX_ROWS}
             index={i}
             guess={g}
             onChange={(next) => updateGuess(i, next)}
@@ -237,25 +182,27 @@ export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
       </div>
 
       <div className="starter-buttons">
-        {STARTERS.map((word) => (
+        {STARTERS.map((color) => (
           <button
-            key={word}
+            key={color}
             type="button"
             className="ax-chip starter-btn"
-            onClick={() => addStarterRow(word)}
+            onClick={() => addStarterRow(color)}
             disabled={!canAddStarter}
-            title={word}
+            title={`all ${color}`}
           >
-            {word}
+            {Array.from({ length: 4 }).map((_, j) => (
+              <span key={j} className="peg-dot starter-dot peg-dot--square" style={{ background: connectionsHex(color) }} />
+            ))}
           </button>
         ))}
       </div>
 
       <div className="guess-row-actions">
-        <button type="button" className="ax-btn" onClick={addRow} disabled={guesses.length >= rowCap}>
-          {autoSolve && guesses.length === MAX_ROWS ? '+ add solution' : '+ add guess row'}
+        <button type="button" className="ax-btn" onClick={addRow} disabled={guesses.length >= MAX_ROWS}>
+          + add guess row
         </button>
-        <span className="text-meta">{guesses.length} / {rowCap} rows</span>
+        <span className="text-meta">{guesses.length} / {MAX_ROWS} rows</span>
       </div>
 
       <div className="form-row">

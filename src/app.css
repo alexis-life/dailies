@@ -211,6 +211,23 @@
   flex: 1 1 90px;
 }
 
+.stats-grid--four {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.stats-grid--two {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: 10px;
+}
+
+@media (max-width: 480px) {
+  .stats-grid--four {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* ── Distribution / colors-used bars ──────────────────── */
 .dist-chart {
   display: flex;
@@ -302,6 +319,10 @@
   height: 16px;
 }
 
+.peg-dot--square {
+  border-radius: var(--radius-sm);
+}
+
 .color-slot-wrap {
   position: relative;
   display: flex;
@@ -313,7 +334,6 @@
   left: 0;
   z-index: 20;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 6px;
   padding: 10px;
   box-shadow: var(--shadow-popover);
@@ -442,9 +462,13 @@
 .nyt-game-toggle {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 16px;
+  padding: 0 24px;
   margin-bottom: 16px;
+}
+
+.nyt-game-toggle .ax-tabs {
+  overflow-x: visible;
 }
 
 .nyt-help-link {

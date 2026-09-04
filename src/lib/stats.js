@@ -34,6 +34,19 @@ export function computeGuessDistribution(games, maxRows = 10) {
   return dist
 }
 
+// Connections-specific: a win always takes exactly 4 correct (category) guesses
+// plus however many mistakes were made along the way, and a loss always ends
+// at exactly 4 mistakes — so mistake count is derivable from guess_count alone,
+// without needing the per-guess payload rows.
+export function computeMistakeDistribution(games) {
+  const dist = Array(5).fill(0)
+  for (const g of games) {
+    const mistakes = g.won ? g.guess_count - 4 : 4
+    if (mistakes >= 0 && mistakes <= 4) dist[mistakes] += 1
+  }
+  return dist
+}
+
 export function computeColorsUsed(guesses) {
   const counts = {}
   for (const guess of guesses) {

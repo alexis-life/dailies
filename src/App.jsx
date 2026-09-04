@@ -9,7 +9,7 @@ import NytTab from './tabs/NytTab'
 
 const TABS = [
   { key: 'spots', label: 'spots', Component: SpotsTab, HelpModal },
-  { key: 'nyt', label: 'nyt', Component: NytTab, signedInOnly: true },
+  { key: 'nyt', label: 'nyt', Component: NytTab },
 ]
 
 export default function App() {
