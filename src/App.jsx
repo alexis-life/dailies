@@ -1,20 +1,25 @@
 import { useState } from 'react'
 import { supabase } from './lib/supabaseClient'
 import { useSession } from './lib/useSession'
+import { useHashTab } from './lib/useHashTab'
 import LoginScreen from './components/LoginScreen'
+import HelpModal from './components/HelpModal'
 import SpotsTab from './tabs/SpotsTab'
 
 const TABS = [
-  { key: 'spots', label: 'spots', Component: SpotsTab },
+  { key: 'spots', label: 'spots', Component: SpotsTab, HelpModal },
 ]
 
 export default function App() {
   const session = useSession()
   const [showLogin, setShowLogin] = useState(false)
-  const [activeTab, setActiveTab] = useState(TABS[0].key)
+  const [showHelp, setShowHelp] = useState(false)
+  const [activeTab, setActiveTab] = useHashTab(TABS[0].key, TABS.map((tab) => tab.key))
 
   const isSignedIn = Boolean(session)
-  const ActiveTabComponent = TABS.find((tab) => tab.key === activeTab)?.Component
+  const activeTabConfig = TABS.find((tab) => tab.key === activeTab)
+  const ActiveTabComponent = activeTabConfig?.Component
+  const ActiveHelpModal = activeTabConfig?.HelpModal
 
   async function handleSignOut() {
     await supabase.auth.signOut()
@@ -50,6 +55,11 @@ export default function App() {
                 </button>
               ))}
             </nav>
+            {ActiveHelpModal && (
+              <button className="ax-btn dailies-account-link tabs-help-link" onClick={() => setShowHelp(true)}>
+                how to play
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -59,6 +69,7 @@ export default function App() {
       </main>
 
       {showLogin && <LoginScreen onClose={() => setShowLogin(false)} />}
+      {showHelp && ActiveHelpModal && <ActiveHelpModal onClose={() => setShowHelp(false)} />}
     </>
   )
 }

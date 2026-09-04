@@ -23,10 +23,9 @@
   font-size: 0.65rem;
 }
 
-.tab-content-head {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 16px;
+.tabs-help-link {
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 /* ── Lowercase everywhere: this app's own copy is already

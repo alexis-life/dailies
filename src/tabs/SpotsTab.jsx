@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { computeStats, computeGuessDistribution, computeColorsUsed } from '../lib/stats'
-import HelpModal from '../components/HelpModal'
 import StatsPanel from '../components/StatsPanel'
 import GuessDistribution from '../components/GuessDistribution'
 import ColorsUsed from '../components/ColorsUsed'
@@ -13,7 +12,6 @@ export default function SpotsTab({ isSignedIn }) {
   const [guesses, setGuesses] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [showHelp, setShowHelp] = useState(false)
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -60,10 +58,6 @@ export default function SpotsTab({ isSignedIn }) {
 
   return (
     <>
-      <div className="tab-content-head">
-        <button className="ax-btn dailies-account-link" onClick={() => setShowHelp(true)}>how to play</button>
-      </div>
-
       {error && <p className="ax-meta form-error">error loading data: {error}</p>}
       {loading ? (
         <p className="ax-empty">loading…</p>
@@ -92,8 +86,6 @@ export default function SpotsTab({ isSignedIn }) {
           </div>
         </div>
       )}
-
-      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
     </>
   )
 }
