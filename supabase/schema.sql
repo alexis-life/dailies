@@ -1,6 +1,8 @@
--- spots.alexischao.com — run this once in the Supabase SQL Editor for this project.
--- Tables are prefixed with spots_ so they don't collide with other apps
--- (e.g. uma_* from uma.alexischao.com) sharing this same Supabase project.
+-- dailies.alexischao.com (SPOTS tab) — run this once in the Supabase SQL
+-- Editor for this project. Tables are prefixed with spots_ so they don't
+-- collide with other apps (e.g. uma_* from uma.alexischao.com) sharing
+-- this same Supabase project. Other game tabs use a separate generic
+-- schema — see supabase/migrations/.
 
 create table if not exists spots_games (
   id uuid primary key default gen_random_uuid(),

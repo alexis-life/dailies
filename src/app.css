@@ -5,7 +5,7 @@
 }
 
 /* ── Header ────────────────────────────────────────── */
-.spots-header-titles {
+.dailies-header-titles {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -13,14 +13,20 @@
   gap: 16px;
 }
 
-.spots-account-actions {
+.dailies-account-actions {
   flex-shrink: 0;
   display: flex;
   gap: 8px;
 }
 
-.spots-account-link {
+.dailies-account-link {
   font-size: 0.65rem;
+}
+
+.tab-content-head {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
 }
 
 /* ── Lowercase everywhere: this app's own copy is already
