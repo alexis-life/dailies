@@ -60,7 +60,6 @@
 
 @media (max-width: 860px) {
   .page-grid { grid-template-columns: 1fr; }
-  .page-col--side { order: -1; }
 }
 
 /* ── Form basics ───────────────────────────────────── */
