@@ -1,22 +1,18 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import { computeFeedback } from '../lib/feedback'
-import { pegHex } from '../lib/colors'
-import GuessRowEditor from './GuessRowEditor'
+import { computeLetterFeedback } from '../lib/feedback'
+import WordleGuessRowEditor from './WordleGuessRowEditor'
 
-const MAX_ROWS = 10
+const MAX_ROWS = 6
+const WORD_LENGTH = 5
 
-const STARTERS = [
-  ['red', 'white', 'red', 'white'],
-  ['blue', 'green', 'blue', 'green'],
-  ['gold', 'purple', 'gold', 'purple'], // "gold" is the internal key for the color labeled "yellow"
-]
+const STARTERS = ['PENIS']
 
 function emptyGuess() {
-  return { colors: [null, null, null, null], green: 0, gold: 0 }
+  return { letters: Array(WORD_LENGTH).fill(null), statuses: Array(WORD_LENGTH).fill('gray') }
 }
 
-export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
+export default function WordleLogForm({ nextPuzzleNumber, onSaved }) {
   const [puzzleNumber, setPuzzleNumber] = useState('')
   const [isDaily, setIsDaily] = useState(true)
   const [autoSolve, setAutoSolve] = useState(true)
@@ -28,31 +24,30 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
   const rowCap = autoSolve ? MAX_ROWS + 1 : MAX_ROWS
   const hasRevealRow = autoSolve && guesses.length > MAX_ROWS
   const revealRow = hasRevealRow ? guesses[MAX_ROWS] : null
-  const revealFilled = revealRow ? revealRow.colors.every((c) => c) : false
+  const revealFilled = revealRow ? revealRow.letters.every((c) => c) : false
 
   const realGuesses = guesses.slice(0, MAX_ROWS)
-  // The "solution" is the last fully-colored real guess, ignoring any trailing
-  // blank rows — so adding a new guess row doesn't retroactively hide
-  // feedback that was already calculated for earlier, completed rows.
-  const filledRealGuesses = realGuesses.filter((g) => g.colors.every((c) => c))
+  const filledRealGuesses = realGuesses.filter((g) => g.letters.every((c) => c))
   const lastFilledRealGuess = filledRealGuesses[filledRealGuesses.length - 1]
 
   const solution = hasRevealRow
-    ? (revealFilled ? revealRow.colors : null)
-    : (lastFilledRealGuess?.colors ?? null)
+    ? (revealFilled ? revealRow.letters : null)
+    : (lastFilledRealGuess?.letters ?? null)
   const solutionReady = autoSolve && Boolean(solution)
 
   const lastGuess = guesses[guesses.length - 1]
-  const won = hasRevealRow ? false : autoSolve ? solutionReady : lastGuess.green === 4
+  const won = hasRevealRow
+    ? false
+    : autoSolve
+      ? solutionReady
+      : lastGuess.statuses.every((s) => s === 'green')
 
   const feedbackByRow = guesses.map((g, i) => {
     if (hasRevealRow && i === MAX_ROWS) return null
     if (!solutionReady) return null
-    return g.colors.every((c) => c) ? computeFeedback(g.colors, solution) : null
+    return g.letters.every((c) => c) ? computeLetterFeedback(g.letters, solution) : null
   })
 
-  // Prefill the next puzzle number, but never clobber something the user
-  // already typed — only fills in while the field is still blank.
   useEffect(() => {
     setPuzzleNumber((current) => (current === '' ? String(nextPuzzleNumber ?? '') : current))
   }, [nextPuzzleNumber])
@@ -65,8 +60,12 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
     setGuesses((rows) => (rows.length >= rowCap ? rows : [...rows, emptyGuess()]))
   }
 
-  function addStarterRow(colors) {
-    setGuesses((rows) => (rows.length >= rowCap ? rows : [...rows, { colors: [...colors], green: 0, gold: 0 }]))
+  function addStarterRow(word) {
+    setGuesses((rows) =>
+      rows.length >= rowCap
+        ? rows
+        : [...rows, { letters: word.split(''), statuses: Array(WORD_LENGTH).fill('gray') }]
+    )
   }
 
   function removeRow(i) {
@@ -86,21 +85,21 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
       return 'Enter a puzzle number.'
     }
     for (const g of realGuesses) {
-      if (g.colors.some((c) => !c)) {
-        return 'Every guess row needs all 4 colors filled in.'
+      if (g.letters.some((c) => !c)) {
+        return `Every guess row needs all ${WORD_LENGTH} letters filled in.`
       }
     }
     if (hasRevealRow) {
       if (!revealFilled) {
-        return 'Fill in the revealed solution\'s 4 colors before saving.'
+        return `Fill in the revealed solution's ${WORD_LENGTH} letters before saving.`
       }
       return null
     }
     if (autoSolve && !solutionReady) {
-      return 'Fill in all 4 colors on your final (winning) guess so feedback can be calculated.'
+      return `Fill in all ${WORD_LENGTH} letters on your final (winning) guess so feedback can be calculated.`
     }
     if (!won && guesses.length < MAX_ROWS) {
-      return `Not a win yet — add more guesses (up to ${MAX_ROWS}) or get 4 greens on the last row.`
+      return `Not a win yet — add more guesses (up to ${MAX_ROWS}) or mark all ${WORD_LENGTH} letters green on the last row.`
     }
     return null
   }
@@ -115,21 +114,22 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
     setSaving(true)
     setError(null)
 
-    const { data: game, error: gameError } = await supabase
-      .from('spots_games')
+    const { data: entry, error: entryError } = await supabase
+      .from('dailies_entries')
       .insert({
+        game: 'wordle',
         puzzle_number: Number(puzzleNumber),
         won,
         guess_count: hasRevealRow ? MAX_ROWS : guesses.length,
         note: note.trim() || null,
         is_daily: isDaily,
-        solution: hasRevealRow ? revealRow.colors : null,
+        solution: hasRevealRow ? revealRow.letters : null,
       })
       .select()
       .single()
 
-    if (gameError) {
-      setError(gameError.message)
+    if (entryError) {
+      setError(entryError.message)
       setSaving(false)
       return
     }
@@ -137,18 +137,19 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
     const guessRows = realGuesses.map((g, i) => {
       const feedback = feedbackByRow[i]
       return {
-        game_id: game.id,
+        entry_id: entry.id,
         row_index: i,
-        colors: g.colors,
-        green_pegs: feedback ? feedback.green : g.green,
-        gold_pegs: feedback ? feedback.yellow : g.gold,
+        payload: {
+          letters: g.letters,
+          statuses: feedback ? feedback.statuses : g.statuses,
+        },
       }
     })
 
-    const { error: guessesError } = await supabase.from('spots_guesses').insert(guessRows)
+    const { error: guessesError } = await supabase.from('dailies_entry_guesses').insert(guessRows)
 
     if (guessesError) {
-      await supabase.from('spots_games').delete().eq('id', game.id)
+      await supabase.from('dailies_entries').delete().eq('id', entry.id)
       setError(guessesError.message)
       setSaving(false)
       return
@@ -216,7 +217,7 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
 
       <div className="guess-row-list">
         {guesses.map((g, i) => (
-          <GuessRowEditor
+          <WordleGuessRowEditor
             key={i}
             feedback={feedbackByRow[i]}
             autoSolve={autoSolve}
@@ -231,18 +232,16 @@ export default function LogGameForm({ nextPuzzleNumber, onSaved }) {
       </div>
 
       <div className="starter-buttons">
-        {STARTERS.map((pattern, i) => (
+        {STARTERS.map((word) => (
           <button
-            key={i}
+            key={word}
             type="button"
             className="ax-chip starter-btn"
-            onClick={() => addStarterRow(pattern)}
+            onClick={() => addStarterRow(word)}
             disabled={guesses.length >= rowCap}
-            title={pattern.join(', ')}
+            title={word}
           >
-            {pattern.map((key, j) => (
-              <span key={j} className="peg-dot starter-dot" style={{ background: pegHex(key) }} />
-            ))}
+            {word}
           </button>
         ))}
       </div>

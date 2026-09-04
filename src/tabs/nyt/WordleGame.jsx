@@ -1,13 +1,19 @@
 import { useCallback, useEffect, useState } from 'react'
-import { supabase } from '../lib/supabaseClient'
-import { computeStats, computeGuessDistribution, computeColorsUsed } from '../lib/stats'
-import StatsPanel from '../components/StatsPanel'
-import GuessDistribution from '../components/GuessDistribution'
-import ColorsUsed from '../components/ColorsUsed'
-import LogGameForm from '../components/LogGameForm'
-import HistoryList from '../components/HistoryList'
+import { supabase } from '../../lib/supabaseClient'
+import { computeStats, computeGuessDistribution } from '../../lib/stats'
+import StatsPanel from '../../components/StatsPanel'
+import GuessDistribution from '../../components/GuessDistribution'
+import WordleLogForm from '../../components/WordleLogForm'
+import WordleHistoryList from '../../components/WordleHistoryList'
 
-export default function SpotsTab({ isSignedIn }) {
+const MAX_ROWS = 6
+
+// Backfilled placeholder entries (see the one-off SQL import) carry this exact
+// note so they can count toward stats/distribution without cluttering history,
+// since they have no real per-guess data to show in a board replay anyway.
+const IMPORTED_NOTE = 'imported from NYT stats (placeholder)'
+
+export default function WordleGame({ isSignedIn }) {
   const [games, setGames] = useState([])
   const [guesses, setGuesses] = useState([])
   const [loading, setLoading] = useState(true)
@@ -17,16 +23,27 @@ export default function SpotsTab({ isSignedIn }) {
     setLoading(true)
     setError(null)
 
-    const [gamesRes, guessesRes] = await Promise.all([
-      supabase.from('spots_games').select('*').order('puzzle_number', { ascending: true }),
-      supabase.from('spots_guesses').select('*').order('row_index', { ascending: true }),
-    ])
+    const gamesRes = await supabase
+      .from('dailies_entries')
+      .select('*')
+      .eq('game', 'wordle')
+      .order('puzzle_number', { ascending: true })
 
     if (gamesRes.error) {
       setError(gamesRes.error.message)
       setLoading(false)
       return
     }
+
+    const entryIds = (gamesRes.data ?? []).map((g) => g.id)
+    const guessesRes = entryIds.length
+      ? await supabase
+          .from('dailies_entry_guesses')
+          .select('*')
+          .in('entry_id', entryIds)
+          .order('row_index', { ascending: true })
+      : { data: [], error: null }
+
     if (guessesRes.error) {
       setError(guessesRes.error.message)
       setLoading(false)
@@ -43,7 +60,7 @@ export default function SpotsTab({ isSignedIn }) {
   }, [loadData])
 
   const guessesByGame = guesses.reduce((acc, g) => {
-    (acc[g.game_id] ??= []).push(g)
+    (acc[g.entry_id] ??= []).push(g)
     return acc
   }, {})
 
@@ -53,8 +70,8 @@ export default function SpotsTab({ isSignedIn }) {
     : ''
 
   const stats = computeStats(games)
-  const distribution = computeGuessDistribution(games)
-  const colorCounts = computeColorsUsed(guesses)
+  const distribution = computeGuessDistribution(games, MAX_ROWS)
+  const historyGames = games.filter((g) => g.note !== IMPORTED_NOTE)
 
   return (
     <>
@@ -66,9 +83,8 @@ export default function SpotsTab({ isSignedIn }) {
           <div className="page-col page-col--main">
             <StatsPanel stats={stats} />
             <GuessDistribution distribution={distribution} total={stats.played} />
-            <ColorsUsed counts={colorCounts} />
-            <HistoryList
-              games={games}
+            <WordleHistoryList
+              games={historyGames}
               guessesByGame={guessesByGame}
               isSignedIn={isSignedIn}
               onChanged={loadData}
@@ -76,7 +92,7 @@ export default function SpotsTab({ isSignedIn }) {
           </div>
           <div className="page-col page-col--side">
             {isSignedIn ? (
-              <LogGameForm nextPuzzleNumber={nextPuzzleNumber} onSaved={loadData} />
+              <WordleLogForm nextPuzzleNumber={nextPuzzleNumber} onSaved={loadData} />
             ) : (
               <div className="ax-card">
                 <h2>log a game</h2>

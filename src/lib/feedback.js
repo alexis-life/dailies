@@ -25,3 +25,32 @@ export function computeFeedback(guessColors, solutionColors) {
 
   return { green, yellow }
 }
+
+// Same duplicate-safe algorithm as computeFeedback, but returns a per-position
+// status ('green' | 'yellow' | 'gray') instead of just counts — needed for games
+// like Wordle where feedback is shown directly on each guessed tile, not as a
+// separate unordered peg cluster.
+export function computeLetterFeedback(guessValues, solutionValues) {
+  const statuses = Array(guessValues.length).fill('gray')
+  const solutionRemaining = [...solutionValues]
+
+  guessValues.forEach((value, i) => {
+    if (value === solutionValues[i]) {
+      statuses[i] = 'green'
+      solutionRemaining[i] = null
+    }
+  })
+
+  guessValues.forEach((value, i) => {
+    if (statuses[i] === 'green') return
+    const idx = solutionRemaining.indexOf(value)
+    if (idx !== -1) {
+      statuses[i] = 'yellow'
+      solutionRemaining[idx] = null
+    }
+  })
+
+  const green = statuses.filter((s) => s === 'green').length
+  const yellow = statuses.filter((s) => s === 'yellow').length
+  return { statuses, green, yellow }
+}

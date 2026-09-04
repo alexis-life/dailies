@@ -1,7 +1,7 @@
 import ColorSlot from './ColorSlot'
 import PegStepper from './PegStepper'
 
-export default function GuessRowEditor({ index, guess, onChange, onRemove, canRemove, feedback, autoSolve }) {
+export default function GuessRowEditor({ index, guess, onChange, onRemove, canRemove, feedback, autoSolve, isRevealRow }) {
   function setColor(slotIndex, color) {
     const colors = [...guess.colors]
     colors[slotIndex] = color
@@ -21,13 +21,13 @@ export default function GuessRowEditor({ index, guess, onChange, onRemove, canRe
   return (
     <div className="guess-row-editor">
       <div className="guess-row-top">
-        <span className="guess-row-index text-meta">#{index + 1}</span>
+        <span className="guess-row-index text-meta">{isRevealRow ? 'answer' : `#${index + 1}`}</span>
         <div className="guess-row-colors">
           {guess.colors.map((c, i) => (
             <ColorSlot key={i} value={c} onChange={(color) => setColor(i, color)} />
           ))}
         </div>
-        {autoSolve && (
+        {autoSolve && !isRevealRow && (
           <div className="guess-row-feedback">
             {Array.from({ length: feedback ? feedback.green : 0 }).map((_, i) => (
               <span key={`g${i}`} className="feedback-peg feedback-peg--green" />
@@ -46,7 +46,7 @@ export default function GuessRowEditor({ index, guess, onChange, onRemove, canRe
           </button>
         )}
       </div>
-      {!autoSolve && (
+      {!autoSolve && !isRevealRow && (
         <div className="guess-row-pegs">
           <PegStepper label="green" value={guess.green} onChange={setGreen} max={4 - guess.gold} />
           <PegStepper label="yellow" value={guess.gold} onChange={setGold} max={4 - guess.green} />

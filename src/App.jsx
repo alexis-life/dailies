@@ -5,19 +5,23 @@ import { useHashTab } from './lib/useHashTab'
 import LoginScreen from './components/LoginScreen'
 import HelpModal from './components/HelpModal'
 import SpotsTab from './tabs/SpotsTab'
+import NytTab from './tabs/NytTab'
 
 const TABS = [
   { key: 'spots', label: 'spots', Component: SpotsTab, HelpModal },
+  { key: 'nyt', label: 'nyt', Component: NytTab, signedInOnly: true },
 ]
 
 export default function App() {
   const session = useSession()
   const [showLogin, setShowLogin] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
-  const [activeTab, setActiveTab] = useHashTab(TABS[0].key, TABS.map((tab) => tab.key))
 
   const isSignedIn = Boolean(session)
-  const activeTabConfig = TABS.find((tab) => tab.key === activeTab)
+  const visibleTabs = TABS.filter((tab) => !tab.signedInOnly || isSignedIn)
+  const [activeTab, setActiveTab] = useHashTab(TABS[0].key, visibleTabs.map((tab) => tab.key))
+
+  const activeTabConfig = visibleTabs.find((tab) => tab.key === activeTab)
   const ActiveTabComponent = activeTabConfig?.Component
   const ActiveHelpModal = activeTabConfig?.HelpModal
 
@@ -44,7 +48,7 @@ export default function App() {
         <div className="ax-tabs-row">
           <div className="ax-tabs-inner">
             <nav className="ax-tabs">
-              {TABS.map((tab) => (
+              {visibleTabs.map((tab) => (
                 <button
                   key={tab.key}
                   type="button"

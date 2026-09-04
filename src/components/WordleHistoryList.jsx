@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import { puzzleDateFor } from '../lib/puzzleDate'
-import { pegHex } from '../lib/colors'
-import BoardReplay from './BoardReplay'
+import { wordlePuzzleDateFor } from '../lib/wordlePuzzleDate'
+import WordleBoardReplay from './WordleBoardReplay'
 
-export default function HistoryList({ games, guessesByGame, isSignedIn, onChanged }) {
+export default function WordleHistoryList({ games, guessesByGame, isSignedIn, onChanged }) {
   const [expandedId, setExpandedId] = useState(null)
   const [editingId, setEditingId] = useState(null)
   const [noteDraft, setNoteDraft] = useState('')
@@ -26,7 +25,7 @@ export default function HistoryList({ games, guessesByGame, isSignedIn, onChange
     setBusyId(id)
     setError(null)
     const { error: updateError } = await supabase
-      .from('spots_games')
+      .from('dailies_entries')
       .update({ note: noteDraft.trim() || null })
       .eq('id', id)
     setBusyId(null)
@@ -42,7 +41,7 @@ export default function HistoryList({ games, guessesByGame, isSignedIn, onChange
     if (!window.confirm('Delete this game and its guesses?')) return
     setBusyId(id)
     setError(null)
-    const { error: deleteError } = await supabase.from('spots_games').delete().eq('id', id)
+    const { error: deleteError } = await supabase.from('dailies_entries').delete().eq('id', id)
     setBusyId(null)
     if (deleteError) {
       setError(deleteError.message)
@@ -81,7 +80,7 @@ export default function HistoryList({ games, guessesByGame, isSignedIn, onChange
                     {game.guess_count} {game.guess_count === 1 ? 'guess' : 'guesses'}
                   </span>
                   {game.is_daily === false && <span className="ax-badge badge-archive">archive</span>}
-                  <span className="text-meta history-item-date">{puzzleDateFor(game.puzzle_number)}</span>
+                  <span className="text-meta history-item-date">{wordlePuzzleDateFor(game.puzzle_number)}</span>
                   <svg
                     className={`history-item-chevron ${expanded ? 'is-expanded' : ''}`}
                     width="14"
@@ -98,15 +97,8 @@ export default function HistoryList({ games, guessesByGame, isSignedIn, onChange
               {expanded && (
                 <div className="history-item-detail">
                   {game.is_daily === false && <div className="history-archive-banner">archive</div>}
-                  <BoardReplay guesses={guessesByGame[game.id] ?? []} />
-                  {game.solution && (
-                    <p className="text-meta history-answer">
-                      answer:{' '}
-                      {game.solution.map((color, i) => (
-                        <span key={i} className="peg-dot peg-dot--sm history-answer-dot" style={{ background: pegHex(color) }} />
-                      ))}
-                    </p>
-                  )}
+                  <WordleBoardReplay guesses={guessesByGame[game.id] ?? []} />
+                  {game.solution && <p className="text-meta history-answer">answer: {game.solution.join('')}</p>}
 
                   {isSignedIn && (
                     <div className="history-item-actions">

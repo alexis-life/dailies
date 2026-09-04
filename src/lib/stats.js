@@ -24,10 +24,10 @@ export function computeStats(games) {
   return { played, won, winPct, currentStreak, bestStreak }
 }
 
-export function computeGuessDistribution(games) {
-  const dist = Array(10).fill(0)
+export function computeGuessDistribution(games, maxRows = 10) {
+  const dist = Array(maxRows).fill(0)
   for (const g of games) {
-    if (g.won && g.guess_count >= 1 && g.guess_count <= 10) {
+    if (g.won && g.guess_count >= 1 && g.guess_count <= maxRows) {
       dist[g.guess_count - 1] += 1
     }
   }
