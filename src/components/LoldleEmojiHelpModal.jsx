@@ -1,4 +1,4 @@
-const EXAMPLE_CLUES = ['4️⃣', '🎭', '🪷', '🔫']
+const EXAMPLE_CLUES = ['🐱', '📖', '✨', '🩹']
 
 export default function LoldleEmojiHelpModal({ onClose }) {
   return (
@@ -24,14 +24,15 @@ export default function LoldleEmojiHelpModal({ onClose }) {
             </div>
           </div>
           <p className="ax-meta help-example-caption">
-            these four emojis (mask, lotus, gun) clue Jhin — a theatrical marksman.
+            these four emojis (cat, book, sparkle, bandage) clue Yuumi, the magical cat who lives
+            in a book and heals her ally.
           </p>
         </section>
 
         <section className="help-section">
           <h2 className="label-micro">scoring</h2>
           <p className="ax-meta">
-            there's no win/lose here, just how many tries it took — solving it on your very first
+            there's no win/lose here, just how many tries it took. solving it on your very first
             guess is a "one shot."
           </p>
         </section>

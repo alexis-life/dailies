@@ -641,6 +641,8 @@
   background: var(--bg-surface);
   border: 2px solid var(--c2);
   font-size: 18px;
+  line-height: 1;
+  text-align: center;
 }
 
 .loldle-solved-bar {

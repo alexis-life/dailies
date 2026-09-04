@@ -49,8 +49,8 @@ export default function LoldleClassicHistoryList({ games, guessesByGame, isSigne
               <button type="button" className="history-item-row" onClick={() => toggleExpand(game.id)}>
                 <div className="history-item-row-top">
                   <span className="history-item-puzzle">#{String(game.puzzle_number).padStart(3, '0')}</span>
-                  <span className={`ax-badge ${game.won ? 'badge-won' : 'badge-lost'}`}>
-                    {game.won ? 'won' : 'lost'}
+                  <span className={`ax-badge ${game.won ? 'badge-won' : ''}`}>
+                    {game.won ? 'solved' : 'in progress'}
                   </span>
                   <span className="ax-badge badge-count">
                     {game.guess_count} {game.guess_count === 1 ? 'guess' : 'guesses'}

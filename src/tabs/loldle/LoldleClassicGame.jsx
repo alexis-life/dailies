@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { computeStats, computeGuessDistribution } from '../../lib/stats'
-import StatsPanel from '../../components/StatsPanel'
+import LoldleClassicStatsPanel from '../../components/LoldleClassicStatsPanel'
 import GuessDistribution from '../../components/GuessDistribution'
 import LoldleClassicLogForm from '../../components/LoldleClassicLogForm'
 import LoldleClassicHistoryList from '../../components/LoldleClassicHistoryList'
@@ -76,7 +76,7 @@ export default function LoldleClassicGame({ isSignedIn }) {
       ) : (
         <div className="page-grid">
           <div className="page-col page-col--main">
-            <StatsPanel stats={stats} />
+            <LoldleClassicStatsPanel stats={stats} />
             <GuessDistribution distribution={distribution} total={stats.played} />
             <LoldleClassicHistoryList
               games={games}
