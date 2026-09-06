@@ -22,6 +22,13 @@ export default function AniguessrStatsPanel({ games }) {
     { label: 'current streak', value: stats.currentStreak },
     { label: 'max streak', value: stats.bestStreak },
   ]
+  if (highest) {
+    primary.push({
+      label: 'highest daily score',
+      value: highest.total.toLocaleString(),
+      caption: aniguessrPuzzleDateFor(highest.puzzleNumber),
+    })
+  }
 
   const modeAverages = ANIGUESSR_MODES.map((mode) => {
     const sum = games.reduce((s, g) => s + (g[mode.key] ?? 0), 0)
@@ -31,19 +38,15 @@ export default function AniguessrStatsPanel({ games }) {
   return (
     <div className="ax-card">
       <h2>stats</h2>
-      <div className="stats-grid stats-grid--four">
+      <div className="stats-grid">
         {primary.map((item) => (
           <div className="ax-stat" key={item.label}>
             <div className="ax-stat-value">{item.value}</div>
             <div className="ax-stat-label">{item.label}</div>
+            {item.caption && <div className="text-meta">{item.caption}</div>}
           </div>
         ))}
       </div>
-      {highest && (
-        <p className="text-meta" style={{ marginTop: 10 }}>
-          highest daily score: {highest.total.toLocaleString()} pts ({aniguessrPuzzleDateFor(highest.puzzleNumber)})
-        </p>
-      )}
       <p className="label-micro" style={{ marginTop: 14 }}>average by mode</p>
       <div className="stats-grid">
         {modeAverages.map((item) => (
