@@ -13,7 +13,7 @@ import LoldleTab from './tabs/LoldleTab'
 const TABS = [
   { key: 'spots', label: 'spots', Component: SpotsTab, HelpModal },
   { key: 'nyt', label: 'nyt', Component: NytTab },
-  { key: 'aniguessr', label: 'aniguessr', Component: AniguessrTab, HelpModal: AniguessrHelpModal, signedInOnly: true },
+  { key: 'aniguessr', label: 'aniguessr', Component: AniguessrTab, HelpModal: AniguessrHelpModal },
   { key: 'loldle', label: 'loldle', Component: LoldleTab },
 ]
 
