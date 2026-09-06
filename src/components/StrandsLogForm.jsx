@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { connectionsHex } from '../lib/colors'
+import { parseStrandsShareText } from '../lib/strandsShareText'
 
 export default function StrandsLogForm({ nextPuzzleNumber, onSaved, editingEntry, editingGuesses, onCancelEdit }) {
   const [puzzleNumber, setPuzzleNumber] = useState('')
@@ -9,6 +10,8 @@ export default function StrandsLogForm({ nextPuzzleNumber, onSaved, editingEntry
   const [solved, setSolved] = useState(true)
   const [sequence, setSequence] = useState([])
   const [note, setNote] = useState('')
+  const [pasteText, setPasteText] = useState('')
+  const [pasteError, setPasteError] = useState(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
 
@@ -35,6 +38,20 @@ export default function StrandsLogForm({ nextPuzzleNumber, onSaved, editingEntry
     setSolved(true)
     setSequence([])
     setNote('')
+    setPasteText('')
+    setPasteError(null)
+  }
+
+  function handleParsePaste() {
+    setPasteError(null)
+    const parsed = parseStrandsShareText(pasteText)
+    if (!parsed) {
+      setPasteError("Couldn't find a puzzle number, theme, or found-order sequence in that text.")
+      return
+    }
+    if (parsed.sequence.length) setSequence(parsed.sequence)
+    if (parsed.puzzleNumber) setPuzzleNumber(String(parsed.puzzleNumber))
+    if (parsed.themeTitle) setThemeTitle(parsed.themeTitle)
   }
 
   function addToSequence(type) {
@@ -168,6 +185,23 @@ export default function StrandsLogForm({ nextPuzzleNumber, onSaved, editingEntry
             </button>
           </div>
         </div>
+      </div>
+
+      <div className="form-row">
+        <label className="label-micro">paste result (optional)</label>
+        <textarea
+          className="ax-input"
+          rows={3}
+          placeholder={'paste the share text here…'}
+          value={pasteText}
+          onChange={(e) => setPasteText(e.target.value)}
+        />
+        <div className="guess-row-actions">
+          <button type="button" className="ax-btn" onClick={handleParsePaste} disabled={!pasteText.trim()}>
+            parse
+          </button>
+        </div>
+        {pasteError && <p className="ax-meta form-error">{pasteError}</p>}
       </div>
 
       <div className="form-row">

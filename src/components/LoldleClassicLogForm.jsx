@@ -192,7 +192,7 @@ export default function LoldleClassicLogForm({ nextPuzzleNumber, onSaved, editin
         <input
           className="ax-input"
           type="text"
-          placeholder={'e.g. "Yuumi"'}
+          placeholder={'e.g. "yuumi"'}
           value={champion}
           onChange={(e) => setChampion(e.target.value)}
         />

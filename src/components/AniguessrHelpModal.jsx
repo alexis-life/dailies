@@ -1,9 +1,9 @@
 const MODES = [
-  { label: 'screenshot', max: 10000, desc: 'guess the anime from a random screenshot.' },
-  { label: 'characters', max: 8000, desc: 'guess the anime from a character portrait.' },
-  { label: 'opening', max: 2500, desc: "guess the anime from its opening clip." },
-  { label: 'ending', max: 5000, desc: "guess the anime from its ending clip." },
-  { label: 'anidle', max: 8000, desc: 'an attribute-comparison mode: guess the title and compare year, studio, source, score, genres, and tags against the answer.' },
+  { label: 'screenshot', desc: 'guess the anime from a random screenshot.' },
+  { label: 'characters', desc: 'guess the anime from a character portrait.' },
+  { label: 'opening', desc: "guess the anime from its opening clip." },
+  { label: 'ending', desc: "guess the anime from its ending clip." },
+  { label: 'anidle', desc: 'an attribute-comparison mode: guess the title and compare year, studio, source, score, genres, and tags against the answer.' },
 ]
 
 export default function AniguessrHelpModal({ onClose }) {
@@ -28,7 +28,7 @@ export default function AniguessrHelpModal({ onClose }) {
           <p className="ax-meta">
             {MODES.map((m) => (
               <span key={m.label} style={{ display: 'block', marginBottom: 6 }}>
-                <strong>{m.label}</strong> (max {m.max.toLocaleString()}) — {m.desc}
+                <strong>{m.label}</strong>: {m.desc}
               </span>
             ))}
           </p>
@@ -37,9 +37,8 @@ export default function AniguessrHelpModal({ onClose }) {
         <section className="help-section">
           <h2 className="label-micro">scoring</h2>
           <p className="ax-meta">
-            a perfect day scores 33,500 points (10,000 + 8,000 + 2,500 + 5,000 + 8,000). "hard
-            mode" (unlimited anidle) doesn't count toward the daily score, so it isn't tracked
-            here.
+            your daily total is the sum of all five mode scores. "hard mode" (unlimited anidle)
+            doesn't count toward the daily score, so it isn't tracked here.
           </p>
         </section>
       </div>

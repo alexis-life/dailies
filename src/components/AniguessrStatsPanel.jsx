@@ -1,7 +1,6 @@
 import { computeStats } from '../lib/stats'
+import { aniguessrPuzzleDateFor } from '../lib/aniguessrPuzzleDate'
 import { ANIGUESSR_MODES } from './AniguessrLogForm'
-
-const MAX_TOTAL = ANIGUESSR_MODES.reduce((sum, mode) => sum + mode.max, 0)
 
 // Aniguessr has no win/lose concept, so `won` is always true on its entries —
 // that makes computeStats' streak math (which requires won + consecutive
@@ -11,10 +10,14 @@ export default function AniguessrStatsPanel({ games }) {
   const stats = computeStats(games)
   const totals = games.map((g) => ANIGUESSR_MODES.reduce((sum, mode) => sum + (g[mode.key] ?? 0), 0))
   const avgTotal = stats.played ? Math.round(totals.reduce((sum, t) => sum + t, 0) / stats.played) : 0
-  const perfectDays = totals.filter((t) => t === MAX_TOTAL).length
+
+  let highest = null
+  games.forEach((g, i) => {
+    if (highest === null || totals[i] > highest.total) highest = { total: totals[i], puzzleNumber: g.puzzle_number }
+  })
 
   const primary = [
-    { label: 'played', value: stats.played },
+    { label: 'total active days', value: stats.played },
     { label: 'avg total', value: avgTotal.toLocaleString() },
     { label: 'current streak', value: stats.currentStreak },
     { label: 'max streak', value: stats.bestStreak },
@@ -36,7 +39,11 @@ export default function AniguessrStatsPanel({ games }) {
           </div>
         ))}
       </div>
-      <p className="text-meta" style={{ marginTop: 10 }}>{perfectDays} perfect {perfectDays === 1 ? 'day' : 'days'} (all {MAX_TOTAL.toLocaleString()} pts)</p>
+      {highest && (
+        <p className="text-meta" style={{ marginTop: 10 }}>
+          highest daily score: {highest.total.toLocaleString()} pts ({aniguessrPuzzleDateFor(highest.puzzleNumber)})
+        </p>
+      )}
       <p className="label-micro" style={{ marginTop: 14 }}>average by mode</p>
       <div className="stats-grid">
         {modeAverages.map((item) => (

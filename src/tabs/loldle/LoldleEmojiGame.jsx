@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabaseClient'
 import LoldleEmojiStatsPanel from '../../components/LoldleEmojiStatsPanel'
 import LoldleEmojiLogForm from '../../components/LoldleEmojiLogForm'
 import LoldleEmojiHistoryList from '../../components/LoldleEmojiHistoryList'
+import ResetCountdown from '../../components/ResetCountdown'
 
 export default function LoldleEmojiGame({ isSignedIn }) {
   const [games, setGames] = useState([])
@@ -56,6 +57,7 @@ export default function LoldleEmojiGame({ isSignedIn }) {
             />
           </div>
           <div className="page-col page-col--side">
+            <ResetCountdown mode="utc" utcHour={6} />
             {isSignedIn ? (
               <LoldleEmojiLogForm
                 nextPuzzleNumber={nextPuzzleNumber}

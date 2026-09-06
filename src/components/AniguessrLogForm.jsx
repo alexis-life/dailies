@@ -3,11 +3,11 @@ import { supabase } from '../lib/supabaseClient'
 import { parseAniguessrShareText } from '../lib/aniguessrShareText'
 
 const MODES = [
-  { key: 'screenshot_score', label: 'screenshot', max: 10000 },
-  { key: 'characters_score', label: 'characters', max: 8000 },
-  { key: 'opening_score', label: 'opening', max: 2500 },
-  { key: 'ending_score', label: 'ending', max: 5000 },
-  { key: 'anidle_score', label: 'anidle', max: 8000 },
+  { key: 'screenshot_score', label: 'screenshot' },
+  { key: 'characters_score', label: 'characters' },
+  { key: 'opening_score', label: 'opening' },
+  { key: 'ending_score', label: 'ending' },
+  { key: 'anidle_score', label: 'anidle' },
 ]
 
 function emptyScores() {
@@ -187,12 +187,11 @@ export default function AniguessrLogForm({ nextPuzzleNumber, onSaved, editingEnt
       <div className="form-grid-2">
         {MODES.map((mode) => (
           <div className="form-row" key={mode.key}>
-            <label className="label-micro">{mode.label} (max {mode.max.toLocaleString()})</label>
+            <label className="label-micro">{mode.label}</label>
             <input
               className="ax-input"
               type="number"
               min="0"
-              max={mode.max}
               value={scores[mode.key]}
               onChange={(e) => setScore(mode.key, e.target.value)}
               required

@@ -26,3 +26,13 @@ export const CONNECTIONS_COLORS = [
 export function connectionsHex(key) {
   return CONNECTIONS_COLORS.find((c) => c.key === key)?.hex ?? '#ccc'
 }
+
+// Aniguessr's 5 daily modes — distinct enough to tell apart as overlapping
+// lines on the trend chart.
+export const ANIGUESSR_MODE_COLORS = {
+  screenshot_score: '#6c9bd1',
+  characters_score: '#5bbfa0',
+  opening_score: '#d0c25a',
+  ending_score: '#e08e4f',
+  anidle_score: '#c96b8a',
+}

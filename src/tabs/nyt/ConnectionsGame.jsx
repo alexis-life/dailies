@@ -5,6 +5,7 @@ import ConnectionsStatsPanel from '../../components/ConnectionsStatsPanel'
 import MistakeDistribution from '../../components/MistakeDistribution'
 import ConnectionsLogForm from '../../components/ConnectionsLogForm'
 import ConnectionsHistoryList from '../../components/ConnectionsHistoryList'
+import ResetCountdown from '../../components/ResetCountdown'
 
 // Backfilled placeholder entries (see the one-off SQL import) carry this exact
 // note so they can count toward stats/streaks without cluttering history,
@@ -109,6 +110,7 @@ export default function ConnectionsGame({ isSignedIn }) {
             />
           </div>
           <div className="page-col page-col--side">
+            <ResetCountdown mode="local" />
             {isSignedIn ? (
               <ConnectionsLogForm
                 nextPuzzleNumber={nextPuzzleNumber}

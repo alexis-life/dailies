@@ -535,6 +535,32 @@
   font-size: 0.65rem;
 }
 
+.nyt-help-link-icon {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .nyt-help-link-text {
+    display: none;
+  }
+
+  .nyt-help-link-icon {
+    display: inline;
+    line-height: 1;
+    font-size: 12px;
+  }
+
+  .nyt-help-link {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+}
+
 /* ── Letter slots (Wordle) ────────────────────────────── */
 .letter-slot {
   width: 26px;

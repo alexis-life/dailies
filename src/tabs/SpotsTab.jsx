@@ -6,6 +6,7 @@ import GuessDistribution from '../components/GuessDistribution'
 import ColorsUsed from '../components/ColorsUsed'
 import LogGameForm from '../components/LogGameForm'
 import HistoryList from '../components/HistoryList'
+import ResetCountdown from '../components/ResetCountdown'
 
 export default function SpotsTab({ isSignedIn }) {
   const [games, setGames] = useState([])
@@ -77,6 +78,7 @@ export default function SpotsTab({ isSignedIn }) {
             />
           </div>
           <div className="page-col page-col--side">
+            <ResetCountdown mode="local" />
             {isSignedIn ? (
               <LogGameForm
                 nextPuzzleNumber={nextPuzzleNumber}

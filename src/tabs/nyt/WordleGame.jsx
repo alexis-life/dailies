@@ -5,6 +5,7 @@ import StatsPanel from '../../components/StatsPanel'
 import GuessDistribution from '../../components/GuessDistribution'
 import WordleLogForm from '../../components/WordleLogForm'
 import WordleHistoryList from '../../components/WordleHistoryList'
+import ResetCountdown from '../../components/ResetCountdown'
 
 const MAX_ROWS = 6
 
@@ -93,6 +94,7 @@ export default function WordleGame({ isSignedIn }) {
             />
           </div>
           <div className="page-col page-col--side">
+            <ResetCountdown mode="local" />
             {isSignedIn ? (
               <WordleLogForm
                 nextPuzzleNumber={nextPuzzleNumber}

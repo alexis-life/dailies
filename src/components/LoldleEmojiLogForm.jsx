@@ -132,7 +132,7 @@ export default function LoldleEmojiLogForm({ nextPuzzleNumber, onSaved, editingE
         <input
           className="ax-input"
           type="text"
-          placeholder={'e.g. "Yuumi"'}
+          placeholder={'e.g. "yuumi"'}
           value={champion}
           onChange={(e) => setChampion(e.target.value)}
         />
@@ -155,7 +155,7 @@ export default function LoldleEmojiLogForm({ nextPuzzleNumber, onSaved, editingE
         <input
           className="ax-input"
           type="text"
-          placeholder={'e.g. "4️⃣🎭🪷🔫" (paste from the reveal screen)'}
+          placeholder={'e.g. "🐱📖✨🩹"'}
           value={emojiClues}
           onChange={(e) => setEmojiClues(e.target.value)}
         />

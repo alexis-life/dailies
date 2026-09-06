@@ -4,6 +4,7 @@ import { computeStats } from '../../lib/stats'
 import StrandsStatsPanel from '../../components/StrandsStatsPanel'
 import StrandsLogForm from '../../components/StrandsLogForm'
 import StrandsHistoryList from '../../components/StrandsHistoryList'
+import ResetCountdown from '../../components/ResetCountdown'
 
 // Backfilled placeholder entries (see the one-off SQL import) carry this exact
 // note so they can count toward stats/streaks without cluttering history,
@@ -103,6 +104,7 @@ export default function StrandsGame({ isSignedIn }) {
             />
           </div>
           <div className="page-col page-col--side">
+            <ResetCountdown mode="local" />
             {isSignedIn ? (
               <StrandsLogForm
                 nextPuzzleNumber={nextPuzzleNumber}

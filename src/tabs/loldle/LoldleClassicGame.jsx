@@ -5,6 +5,7 @@ import LoldleClassicStatsPanel from '../../components/LoldleClassicStatsPanel'
 import GuessDistribution from '../../components/GuessDistribution'
 import LoldleClassicLogForm from '../../components/LoldleClassicLogForm'
 import LoldleClassicHistoryList from '../../components/LoldleClassicHistoryList'
+import ResetCountdown from '../../components/ResetCountdown'
 
 const DISTRIBUTION_MAX_ROWS = 15
 
@@ -87,6 +88,7 @@ export default function LoldleClassicGame({ isSignedIn }) {
             />
           </div>
           <div className="page-col page-col--side">
+            <ResetCountdown mode="utc" utcHour={6} />
             {isSignedIn ? (
               <LoldleClassicLogForm
                 nextPuzzleNumber={nextPuzzleNumber}

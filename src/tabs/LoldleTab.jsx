@@ -33,8 +33,9 @@ export default function LoldleTab({ isSignedIn }) {
           ))}
         </nav>
         {ActiveHelpModal && (
-          <button type="button" className="ax-btn nyt-help-link" onClick={() => setShowHelp(true)}>
-            how to play
+          <button type="button" className="ax-btn nyt-help-link" aria-label="how to play" onClick={() => setShowHelp(true)}>
+            <span className="nyt-help-link-text">how to play</span>
+            <span className="nyt-help-link-icon">i</span>
           </button>
         )}
       </div>
