@@ -139,17 +139,6 @@ export default function OnepiecedleDevilFruitLogForm({ nextPuzzleNumber, onSaved
       </div>
 
       <div className="form-row">
-        <label className="label-micro">devil fruit (optional)</label>
-        <input
-          className="ax-input"
-          type="text"
-          placeholder={'e.g. "Mera Mera no Mi"'}
-          value={devilFruit}
-          onChange={(e) => setDevilFruit(e.target.value)}
-        />
-      </div>
-
-      <div className="form-row">
         <label className="label-micro">tries</label>
         <input
           className="ax-input"
@@ -158,6 +147,17 @@ export default function OnepiecedleDevilFruitLogForm({ nextPuzzleNumber, onSaved
           value={tries}
           onChange={(e) => setTries(e.target.value)}
           required
+        />
+      </div>
+
+      <div className="form-row">
+        <label className="label-micro">devil fruit (optional)</label>
+        <input
+          className="ax-input"
+          type="text"
+          placeholder={'e.g. "mera mera no mi"'}
+          value={devilFruit}
+          onChange={(e) => setDevilFruit(e.target.value)}
         />
       </div>
 
