@@ -1,7 +1,7 @@
 import AttributeSlot from './AttributeSlot'
-import { LOLDLE_COLUMNS } from '../lib/attributeFeedback'
+import { ONEPIECEDLE_COLUMNS } from '../lib/attributeFeedback'
 
-export default function LoldleGuessRowEditor({ index, statuses, onChange, onRemove, canRemove }) {
+export default function OnepiecedleGuessRowEditor({ index, statuses, onChange, onRemove, canRemove }) {
   function setStatus(colIndex, status) {
     const next = [...statuses]
     next[colIndex] = status
@@ -15,7 +15,7 @@ export default function LoldleGuessRowEditor({ index, statuses, onChange, onRemo
       <div className="guess-row-top">
         <span className="guess-row-index text-meta">#{index + 1}</span>
         <div className="guess-row-colors attribute-row-slots">
-          {LOLDLE_COLUMNS.map((col, i) => (
+          {ONEPIECEDLE_COLUMNS.map((col, i) => (
             <AttributeSlot
               key={col.key}
               type={col.type}

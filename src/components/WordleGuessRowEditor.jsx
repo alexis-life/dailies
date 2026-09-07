@@ -46,8 +46,8 @@ export default function WordleGuessRowEditor({ index, guess, onChange, onRemove,
           ))}
         </div>
         {canRemove && (
-          <button type="button" className="ax-btn guess-row-remove" onClick={onRemove}>
-            remove
+          <button type="button" className="ax-btn guess-row-remove" onClick={onRemove} aria-label="remove guess">
+            ×
           </button>
         )}
       </div>

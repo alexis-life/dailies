@@ -407,6 +407,15 @@
 .guess-row-remove {
   margin-left: auto;
   flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 16px;
+  line-height: 1;
 }
 
 .guess-row-pegs {

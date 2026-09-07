@@ -41,8 +41,8 @@ export default function GuessRowEditor({ index, guess, onChange, onRemove, canRe
           </div>
         )}
         {canRemove && (
-          <button type="button" className="ax-btn guess-row-remove" onClick={onRemove}>
-            remove
+          <button type="button" className="ax-btn guess-row-remove" onClick={onRemove} aria-label="remove guess">
+            ×
           </button>
         )}
       </div>

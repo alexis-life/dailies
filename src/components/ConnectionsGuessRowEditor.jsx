@@ -26,8 +26,8 @@ export default function ConnectionsGuessRowEditor({ index, guess, onChange, onRe
           </span>
         )}
         {canRemove && (
-          <button type="button" className="ax-btn guess-row-remove" onClick={onRemove}>
-            remove
+          <button type="button" className="ax-btn guess-row-remove" onClick={onRemove} aria-label="remove guess">
+            ×
           </button>
         )}
       </div>

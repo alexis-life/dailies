@@ -13,6 +13,22 @@ export const LOLDLE_COLUMNS = [
   { key: 'releaseYear', label: 'Release Year', type: 'numeric' },
 ]
 
+// OnePiecedle Classic's own attribute grid — same shape as LoLdle's, just a
+// different set of columns. Confirmed against the user's own screenshots:
+// Haki is multi-valued (a character can have 0-3 types), Last Bounty/Height
+// are numeric, and First Arc is also numeric (compared by chronological
+// story order, not just exact match — confirmed by the user).
+export const ONEPIECEDLE_COLUMNS = [
+  { key: 'gender', label: 'Gender', type: 'exact' },
+  { key: 'affiliation', label: 'Affiliation', type: 'exact' },
+  { key: 'devilFruit', label: 'Devil Fruit', type: 'exact' },
+  { key: 'haki', label: 'Haki', type: 'multi' },
+  { key: 'lastBounty', label: 'Last Bounty', type: 'numeric' },
+  { key: 'height', label: 'Height', type: 'numeric' },
+  { key: 'origin', label: 'Origin', type: 'exact' },
+  { key: 'firstArc', label: 'First Arc', type: 'numeric' },
+]
+
 // Cycle order per column type — tapping a cell steps through these in order.
 export const STATUS_CYCLES = {
   exact: ['red', 'green'],

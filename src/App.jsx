@@ -9,12 +9,14 @@ import NytTab from './tabs/NytTab'
 import AniguessrTab from './tabs/AniguessrTab'
 import AniguessrHelpModal from './components/AniguessrHelpModal'
 import LoldleTab from './tabs/LoldleTab'
+import OnepiecedleTab from './tabs/OnepiecedleTab'
 
 const TABS = [
   { key: 'spots', label: 'spots', Component: SpotsTab, HelpModal },
   { key: 'nyt', label: 'nyt', Component: NytTab },
   { key: 'aniguessr', label: 'aniguessr', Component: AniguessrTab, HelpModal: AniguessrHelpModal },
   { key: 'loldle', label: 'loldle', Component: LoldleTab },
+  { key: 'onepiecedle', label: 'onepiecedle', Component: OnepiecedleTab },
 ]
 
 export default function App() {
