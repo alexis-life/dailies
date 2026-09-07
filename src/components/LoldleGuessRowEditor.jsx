@@ -8,8 +8,6 @@ export default function LoldleGuessRowEditor({ index, statuses, onChange, onRemo
     onChange(next)
   }
 
-  const won = statuses.every((s) => s === 'green')
-
   return (
     <div className="guess-row-editor">
       <div className="guess-row-top">
@@ -31,7 +29,6 @@ export default function LoldleGuessRowEditor({ index, statuses, onChange, onRemo
           </button>
         )}
       </div>
-      {won && <div className="loldle-solved-bar">solved</div>}
     </div>
   )
 }

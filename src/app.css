@@ -680,16 +680,6 @@
   text-align: center;
 }
 
-.loldle-solved-bar {
-  text-align: center;
-  padding: 4px;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  font-size: 0.85em;
-  background: var(--success-bg);
-  color: var(--success);
-}
-
 /* ── History list ───────────────────────────────────── */
 .history-list {
   display: flex;
