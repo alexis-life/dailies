@@ -615,6 +615,51 @@
   color: #fff;
 }
 
+.letter-slot--purple {
+  background: #8e24aa;
+  border-color: #8e24aa;
+  color: #fff;
+}
+
+.letter-slot--green-circle {
+  background: #2e7d32;
+  border-color: #2e7d32;
+  border-radius: 50%;
+  color: #fff;
+}
+
+.expresso-word-group {
+  display: flex;
+  gap: 2px;
+}
+
+.board-replay-colors--wrap {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+
+.letter-slot--pill {
+  border-radius: 999px;
+}
+
+.letter-slot-group {
+  display: inline-flex;
+}
+
+.letter-slot--run-start {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.letter-slot--run-mid {
+  border-radius: 0;
+}
+
+.letter-slot--run-end {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
 .status-cycle-row {
   display: flex;
   align-items: center;
@@ -633,6 +678,7 @@
 .status-cycle-dot--gray { background: #9e9e9e; }
 .status-cycle-dot--yellow { background: #e0a706; }
 .status-cycle-dot--green { background: #2e7d32; }
+.status-cycle-dot--red { background: #c62828; }
 
 /* ── LoLdle attribute grid ─────────────────────────────── */
 .attribute-row-slots {

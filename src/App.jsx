@@ -10,6 +10,7 @@ import AniguessrTab from './tabs/AniguessrTab'
 import AniguessrHelpModal from './components/AniguessrHelpModal'
 import LoldleTab from './tabs/LoldleTab'
 import OnepiecedleTab from './tabs/OnepiecedleTab'
+import DaydashTab from './tabs/DaydashTab'
 
 const TABS = [
   { key: 'spots', label: 'spots', Component: SpotsTab, HelpModal },
@@ -17,6 +18,7 @@ const TABS = [
   { key: 'aniguessr', label: 'aniguessr', Component: AniguessrTab, HelpModal: AniguessrHelpModal },
   { key: 'loldle', label: 'loldle', Component: LoldleTab },
   { key: 'onepiecedle', label: 'onepiecedle', Component: OnepiecedleTab },
+  { key: 'daydash', label: 'daydash', Component: DaydashTab },
 ]
 
 export default function App() {
