@@ -20,7 +20,7 @@ export default function LoldleEmojiLogForm({ nextPuzzleNumber, onSaved, editingE
     if (!editingEntry) return
     setPuzzleNumber(String(editingEntry.puzzle_number))
     setIsDaily(editingEntry.is_daily !== false)
-    setChampion(editingEntry.solution?.champion ?? '')
+    setChampion((editingEntry.solution?.champion ?? '').toLowerCase())
     setTries(String(editingEntry.guess_count ?? ''))
     setEmojiClues(editingEntry.emoji_clues ?? '')
     setNote(editingEntry.note ?? '')
@@ -134,7 +134,7 @@ export default function LoldleEmojiLogForm({ nextPuzzleNumber, onSaved, editingE
           type="text"
           placeholder={'e.g. "yuumi"'}
           value={champion}
-          onChange={(e) => setChampion(e.target.value)}
+          onChange={(e) => setChampion(e.target.value.toLowerCase())}
         />
       </div>
 

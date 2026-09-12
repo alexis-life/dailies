@@ -88,3 +88,13 @@ export function parsePuzzleNumber(text) {
   const match = text.match(/#(\d+)/)
   return match ? Number(match[1]) : null
 }
+
+// Pulls the true total guess count out of the share text's own header
+// sentence (e.g. "...in 8 shots"/"...in 3 guesses"). Past 5 guesses, LoLdle
+// and OnePiecedle both truncate the visual rows to 5 and add a "+N more"
+// line instead of showing every row — the header number is the only
+// reliable source of the real count once that truncation kicks in.
+export function parseGuessCount(text) {
+  const match = text.match(/(\d+)\s*(?:shots?|guesses?|tries)\b/i)
+  return match ? Number(match[1]) : null
+}

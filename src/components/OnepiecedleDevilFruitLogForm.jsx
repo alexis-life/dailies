@@ -20,8 +20,8 @@ export default function OnepiecedleDevilFruitLogForm({ nextPuzzleNumber, onSaved
     if (!editingEntry) return
     setPuzzleNumber(String(editingEntry.puzzle_number))
     setIsDaily(editingEntry.is_daily !== false)
-    setCharacter(editingEntry.solution?.character ?? '')
-    setDevilFruit(editingEntry.devil_fruit ?? '')
+    setCharacter((editingEntry.solution?.character ?? '').toLowerCase())
+    setDevilFruit((editingEntry.devil_fruit ?? '').toLowerCase())
     setTries(String(editingEntry.guess_count ?? ''))
     setNote(editingEntry.note ?? '')
   }, [editingEntry])
@@ -61,7 +61,7 @@ export default function OnepiecedleDevilFruitLogForm({ nextPuzzleNumber, onSaved
       won: true,
       guess_count: Number(tries),
       solution: character.trim() ? { character: character.trim() } : null,
-      devil_fruit: devilFruit.trim() ? devilFruit.trim().toLowerCase() : null,
+      devil_fruit: devilFruit.trim() || null,
       note: note.trim() || null,
       is_daily: isDaily,
     }
@@ -134,7 +134,7 @@ export default function OnepiecedleDevilFruitLogForm({ nextPuzzleNumber, onSaved
           type="text"
           placeholder={'e.g. "ace"'}
           value={character}
-          onChange={(e) => setCharacter(e.target.value)}
+          onChange={(e) => setCharacter(e.target.value.toLowerCase())}
         />
       </div>
 
@@ -157,7 +157,7 @@ export default function OnepiecedleDevilFruitLogForm({ nextPuzzleNumber, onSaved
           type="text"
           placeholder={'e.g. "mera mera no mi"'}
           value={devilFruit}
-          onChange={(e) => setDevilFruit(e.target.value)}
+          onChange={(e) => setDevilFruit(e.target.value.toLowerCase())}
         />
       </div>
 

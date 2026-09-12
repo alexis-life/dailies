@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import { ONEPIECEDLE_COLUMNS, defaultStatus, parseShareText, parsePuzzleNumber } from '../lib/attributeFeedback'
+import { ONEPIECEDLE_COLUMNS, defaultStatus, parseShareText, parsePuzzleNumber, parseGuessCount } from '../lib/attributeFeedback'
 import OnepiecedleGuessRowEditor from './OnepiecedleGuessRowEditor'
 
 function emptyRow() {
@@ -12,6 +12,7 @@ export default function OnepiecedleClassicLogForm({ nextPuzzleNumber, onSaved, e
   const [isDaily, setIsDaily] = useState(true)
   const [character, setCharacter] = useState('')
   const [guesses, setGuesses] = useState([emptyRow()])
+  const [tries, setTries] = useState('1')
   const [note, setNote] = useState('')
   const [pasteText, setPasteText] = useState('')
   const [pasteError, setPasteError] = useState(null)
@@ -28,9 +29,11 @@ export default function OnepiecedleClassicLogForm({ nextPuzzleNumber, onSaved, e
     const sortedGuesses = [...(editingGuesses ?? [])].sort((a, b) => a.row_index - b.row_index)
     setPuzzleNumber(String(editingEntry.puzzle_number))
     setIsDaily(editingEntry.is_daily !== false)
-    setCharacter(editingEntry.solution?.character ?? '')
+    setCharacter((editingEntry.solution?.character ?? '').toLowerCase())
     setNote(editingEntry.note ?? '')
-    setGuesses(sortedGuesses.length ? sortedGuesses.map((g) => g.payload.statuses) : [emptyRow()])
+    const rows = sortedGuesses.length ? sortedGuesses.map((g) => g.payload.statuses) : [emptyRow()]
+    setGuesses(rows)
+    setTries(String(editingEntry.guess_count ?? rows.length))
   }, [editingEntry, editingGuesses])
 
   function resetForm() {
@@ -38,6 +41,7 @@ export default function OnepiecedleClassicLogForm({ nextPuzzleNumber, onSaved, e
     setIsDaily(true)
     setCharacter('')
     setGuesses([emptyRow()])
+    setTries('1')
     setNote('')
     setPasteText('')
     setPasteError(null)
@@ -48,11 +52,19 @@ export default function OnepiecedleClassicLogForm({ nextPuzzleNumber, onSaved, e
   }
 
   function addRow() {
-    setGuesses((rows) => [...rows, emptyRow()])
+    setGuesses((rows) => {
+      const next = [...rows, emptyRow()]
+      setTries((t) => (Number(t) === rows.length ? String(next.length) : t))
+      return next
+    })
   }
 
   function removeRow(i) {
-    setGuesses((rows) => rows.filter((_, idx) => idx !== i))
+    setGuesses((rows) => {
+      const next = rows.filter((_, idx) => idx !== i)
+      setTries((t) => (Number(t) === rows.length ? String(next.length) : t))
+      return next
+    })
   }
 
   function handleParsePaste() {
@@ -63,6 +75,8 @@ export default function OnepiecedleClassicLogForm({ nextPuzzleNumber, onSaved, e
       return
     }
     setGuesses(rows)
+    const parsedTries = parseGuessCount(pasteText)
+    setTries(String(parsedTries && parsedTries > rows.length ? parsedTries : rows.length))
     const puzzle = parsePuzzleNumber(pasteText)
     if (puzzle) setPuzzleNumber(String(puzzle))
   }
@@ -70,6 +84,9 @@ export default function OnepiecedleClassicLogForm({ nextPuzzleNumber, onSaved, e
   function validate() {
     if (!puzzleNumber || Number.isNaN(Number(puzzleNumber))) {
       return 'Enter a puzzle number.'
+    }
+    if (!tries || Number.isNaN(Number(tries)) || Number(tries) < guesses.length) {
+      return 'Tries must be a number at least as large as the number of guess rows.'
     }
     return null
   }
@@ -84,13 +101,15 @@ export default function OnepiecedleClassicLogForm({ nextPuzzleNumber, onSaved, e
     setSaving(true)
     setError(null)
 
-    const won = guesses.length > 0 && guesses[guesses.length - 1].every((s) => s === 'green')
+    const totalTries = Number(tries)
+    const truncated = totalTries > guesses.length
+    const won = truncated || (guesses.length > 0 && guesses[guesses.length - 1].every((s) => s === 'green'))
 
     const fields = {
       game: 'onepiecedle_classic',
       puzzle_number: Number(puzzleNumber),
       won,
-      guess_count: guesses.length,
+      guess_count: totalTries,
       solution: character.trim() ? { character: character.trim() } : null,
       note: note.trim() || null,
       is_daily: isDaily,
@@ -194,7 +213,7 @@ export default function OnepiecedleClassicLogForm({ nextPuzzleNumber, onSaved, e
           type="text"
           placeholder={'e.g. "ace"'}
           value={character}
-          onChange={(e) => setCharacter(e.target.value)}
+          onChange={(e) => setCharacter(e.target.value.toLowerCase())}
         />
       </div>
 
@@ -203,7 +222,7 @@ export default function OnepiecedleClassicLogForm({ nextPuzzleNumber, onSaved, e
         <textarea
           className="ax-input"
           rows={3}
-          placeholder={'paste the emoji share text here…'}
+          placeholder={'paste the classic share text here…'}
           value={pasteText}
           onChange={(e) => setPasteText(e.target.value)}
         />
@@ -233,6 +252,23 @@ export default function OnepiecedleClassicLogForm({ nextPuzzleNumber, onSaved, e
           + add guess row
         </button>
         <span className="text-meta">{guesses.length} rows</span>
+      </div>
+
+      <div className="form-row">
+        <label className="label-micro">tries</label>
+        <input
+          className="ax-input"
+          type="number"
+          min={guesses.length}
+          value={tries}
+          onChange={(e) => setTries(e.target.value)}
+          required
+        />
+        {Number(tries) > guesses.length && (
+          <p className="text-meta">
+            share text only showed {guesses.length} of {tries} guesses — the rest were hidden by the game.
+          </p>
+        )}
       </div>
 
       <div className="form-row">
