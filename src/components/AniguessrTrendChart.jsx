@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { ANIGUESSR_MODE_COLORS } from '../lib/colors'
-import { ANIGUESSR_MODES } from './AniguessrLogForm'
+import { ANIGUESSR_MODES } from '../lib/aniguessrScores'
 import { aniguessrPuzzleDateFor } from '../lib/aniguessrPuzzleDate'
 
 const RANGES = [

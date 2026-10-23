@@ -1,6 +1,6 @@
 import { computeStats } from '../lib/stats'
 import { aniguessrPuzzleDateFor } from '../lib/aniguessrPuzzleDate'
-import { ANIGUESSR_MODES } from './AniguessrLogForm'
+import { ANIGUESSR_MODES, aniguessrDailyTotal, aniguessrModeAverage, aniguessrModePlayedCount } from '../lib/aniguessrScores'
 
 // Aniguessr has no win/lose concept, so `won` is always true on its entries —
 // that makes computeStats' streak math (which requires won + consecutive
@@ -8,7 +8,7 @@ import { ANIGUESSR_MODES } from './AniguessrLogForm'
 // itself tracks, for free.
 export default function AniguessrStatsPanel({ games }) {
   const stats = computeStats(games)
-  const totals = games.map((g) => ANIGUESSR_MODES.reduce((sum, mode) => sum + (g[mode.key] ?? 0), 0))
+  const totals = games.map((g) => aniguessrDailyTotal(g))
   const avgTotal = stats.played ? Math.round(totals.reduce((sum, t) => sum + t, 0) / stats.played) : 0
 
   let highest = null
@@ -31,8 +31,13 @@ export default function AniguessrStatsPanel({ games }) {
   }
 
   const modeAverages = ANIGUESSR_MODES.map((mode) => {
-    const sum = games.reduce((s, g) => s + (g[mode.key] ?? 0), 0)
-    return { label: mode.label, value: stats.played ? Math.round(sum / stats.played).toLocaleString() : 0 }
+    const average = aniguessrModeAverage(games, mode)
+    const played = aniguessrModePlayedCount(games, mode)
+    return {
+      label: mode.label,
+      value: average == null ? '—' : average.toLocaleString(),
+      caption: mode.optional && stats.played > 0 && played !== stats.played ? `${played} played` : null,
+    }
   })
 
   return (
@@ -53,6 +58,7 @@ export default function AniguessrStatsPanel({ games }) {
           <div className="ax-stat" key={item.label}>
             <div className="ax-stat-value">{item.value}</div>
             <div className="ax-stat-label">{item.label}</div>
+            {item.caption && <div className="text-meta">{item.caption}</div>}
           </div>
         ))}
       </div>

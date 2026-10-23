@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { aniguessrPuzzleDateFor } from '../lib/aniguessrPuzzleDate'
-import { ANIGUESSR_MODES } from './AniguessrLogForm'
+import { ANIGUESSR_MODES, aniguessrDailyTotal, aniguessrScoreWasPlayed } from '../lib/aniguessrScores'
 
 function totalFor(game) {
-  return ANIGUESSR_MODES.reduce((sum, mode) => sum + (game[mode.key] ?? 0), 0)
+  return aniguessrDailyTotal(game)
 }
 
 export default function AniguessrHistoryList({ games, isSignedIn, onEdit, onChanged }) {
@@ -75,7 +75,14 @@ export default function AniguessrHistoryList({ games, isSignedIn, onEdit, onChan
                   <div className="stats-grid">
                     {ANIGUESSR_MODES.map((mode) => (
                       <div className="ax-stat" key={mode.key}>
-                        <div className="ax-stat-value">{(game[mode.key] ?? 0).toLocaleString()}</div>
+                        <div
+                          className="ax-stat-value"
+                          title={mode.optional && !aniguessrScoreWasPlayed(game[mode.key]) ? 'not played' : undefined}
+                        >
+                          {mode.optional && !aniguessrScoreWasPlayed(game[mode.key])
+                            ? '—'
+                            : (game[mode.key] ?? 0).toLocaleString()}
+                        </div>
                         <div className="ax-stat-label">{mode.label}</div>
                       </div>
                     ))}
