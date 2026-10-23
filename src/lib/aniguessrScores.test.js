@@ -68,6 +68,14 @@ test('anidle average ignores skipped days and other averages stay on every day',
   assert.equal(aniguessrModeAverage(games, screenshot), Math.round((10000 + 7500) / 2))
 })
 
+test('a null score on a required mode still counts as 0', () => {
+  const ending = ANIGUESSR_MODES.find((mode) => mode.key === 'ending_score')
+  const games = [{ ...playedDay, ending_score: null }, playedDay]
+  assert.equal(aniguessrModeAverage(games, ending), Math.round((0 + 2500) / 2))
+  assert.equal(aniguessrDailyTotal(games[0]), 22500)
+  assert.equal(aniguessrModeAverage(games, anidle), 5000)
+})
+
 test('filled anidle days match the old average over every logged day', () => {
   const games = [playedDay, { ...playedDay, anidle_score: 7500, screenshot_score: 5000 }]
   const oldAnidle = Math.round((5000 + 7500) / games.length)

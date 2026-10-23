@@ -75,8 +75,13 @@ export default function AniguessrHistoryList({ games, isSignedIn, onEdit, onChan
                   <div className="stats-grid">
                     {ANIGUESSR_MODES.map((mode) => (
                       <div className="ax-stat" key={mode.key}>
-                        <div className="ax-stat-value" title={aniguessrScoreWasPlayed(game[mode.key]) ? undefined : 'not played'}>
-                          {aniguessrScoreWasPlayed(game[mode.key]) ? game[mode.key].toLocaleString() : '—'}
+                        <div
+                          className="ax-stat-value"
+                          title={mode.optional && !aniguessrScoreWasPlayed(game[mode.key]) ? 'not played' : undefined}
+                        >
+                          {mode.optional && !aniguessrScoreWasPlayed(game[mode.key])
+                            ? '—'
+                            : (game[mode.key] ?? 0).toLocaleString()}
                         </div>
                         <div className="ax-stat-label">{mode.label}</div>
                       </div>
