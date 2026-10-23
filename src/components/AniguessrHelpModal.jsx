@@ -19,7 +19,7 @@ export default function AniguessrHelpModal({ onClose }) {
           <h2 className="label-micro">objective</h2>
           <p className="ax-meta">
             each day has five modes, each scored independently. your daily total is the sum of
-            all five scores.
+            the modes you played. anidle can be skipped.
           </p>
         </section>
 
@@ -37,8 +37,8 @@ export default function AniguessrHelpModal({ onClose }) {
         <section className="help-section">
           <h2 className="label-micro">scoring</h2>
           <p className="ax-meta">
-            your daily total is the sum of all five mode scores. "hard mode" (unlimited anidle)
-            doesn't count toward the daily score, so it isn't tracked here.
+            your daily total is the sum of the mode scores you played. anidle is optional.
+            "hard mode" (unlimited anidle) doesn't count toward the daily score, so it isn't tracked here.
           </p>
         </section>
       </div>

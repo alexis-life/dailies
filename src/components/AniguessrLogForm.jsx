@@ -1,23 +1,18 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { parseAniguessrShareText } from '../lib/aniguessrShareText'
-
-const MODES = [
-  { key: 'screenshot_score', label: 'screenshot' },
-  { key: 'characters_score', label: 'characters' },
-  { key: 'opening_score', label: 'opening' },
-  { key: 'ending_score', label: 'ending' },
-  { key: 'anidle_score', label: 'anidle' },
-]
-
-function emptyScores() {
-  return { screenshot_score: '', characters_score: '', opening_score: '', ending_score: '', anidle_score: '' }
-}
+import {
+  ANIGUESSR_MODES,
+  aniguessrDailyTotal,
+  aniguessrScoresForSave,
+  emptyAniguessrScores,
+  validateAniguessrEntry,
+} from '../lib/aniguessrScores'
 
 export default function AniguessrLogForm({ nextPuzzleNumber, onSaved, editingEntry, onCancelEdit }) {
   const [puzzleNumber, setPuzzleNumber] = useState('')
   const [isDaily, setIsDaily] = useState(true)
-  const [scores, setScores] = useState(emptyScores)
+  const [scores, setScores] = useState(emptyAniguessrScores)
   const [note, setNote] = useState('')
   const [pasteText, setPasteText] = useState('')
   const [pasteError, setPasteError] = useState(null)
@@ -46,7 +41,7 @@ export default function AniguessrLogForm({ nextPuzzleNumber, onSaved, editingEnt
   function resetForm() {
     setPuzzleNumber('')
     setIsDaily(true)
-    setScores(emptyScores())
+    setScores(emptyAniguessrScores())
     setNote('')
     setPasteText('')
     setPasteError(null)
@@ -68,16 +63,7 @@ export default function AniguessrLogForm({ nextPuzzleNumber, onSaved, editingEnt
   }
 
   function validate() {
-    if (!puzzleNumber || Number.isNaN(Number(puzzleNumber))) {
-      return 'Enter a puzzle number.'
-    }
-    for (const mode of MODES) {
-      const value = scores[mode.key]
-      if (value === '' || Number.isNaN(Number(value))) {
-        return `Enter a score for ${mode.label}.`
-      }
-    }
-    return null
+    return validateAniguessrEntry({ puzzleNumber, scores })
   }
 
   async function handleSubmit(e) {
@@ -95,11 +81,7 @@ export default function AniguessrLogForm({ nextPuzzleNumber, onSaved, editingEnt
       puzzle_number: Number(puzzleNumber),
       won: true,
       guess_count: 0,
-      screenshot_score: Number(scores.screenshot_score),
-      characters_score: Number(scores.characters_score),
-      opening_score: Number(scores.opening_score),
-      ending_score: Number(scores.ending_score),
-      anidle_score: Number(scores.anidle_score),
+      ...aniguessrScoresForSave(scores),
       note: note.trim() || null,
       is_daily: isDaily,
     }
@@ -129,7 +111,7 @@ export default function AniguessrLogForm({ nextPuzzleNumber, onSaved, editingEnt
     onCancelEdit?.()
   }
 
-  const total = MODES.reduce((sum, mode) => sum + (Number(scores[mode.key]) || 0), 0)
+  const total = aniguessrDailyTotal(scores)
 
   return (
     <form className="ax-card log-game-form" onSubmit={handleSubmit}>
@@ -185,16 +167,16 @@ export default function AniguessrLogForm({ nextPuzzleNumber, onSaved, editingEnt
       </div>
 
       <div className="form-grid-2">
-        {MODES.map((mode) => (
+        {ANIGUESSR_MODES.map((mode) => (
           <div className="form-row" key={mode.key}>
-            <label className="label-micro">{mode.label}</label>
+            <label className="label-micro">{mode.optional ? `${mode.label} (optional)` : mode.label}</label>
             <input
               className="ax-input"
               type="number"
               min="0"
               value={scores[mode.key]}
               onChange={(e) => setScore(mode.key, e.target.value)}
-              required
+              required={!mode.optional}
             />
           </div>
         ))}
@@ -228,4 +210,3 @@ export default function AniguessrLogForm({ nextPuzzleNumber, onSaved, editingEnt
   )
 }
 
-export { MODES as ANIGUESSR_MODES }
